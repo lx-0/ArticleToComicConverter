@@ -2,6 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useParams } from "wouter";
 import { getComicGeneration } from "@/lib/api";
 import { ComicResult } from "@/components/ComicResult";
+import type { Step } from "@db/schema";
 
 export default function Comic() {
   const { cacheId } = useParams();
@@ -11,7 +12,7 @@ export default function Comic() {
     enabled: !!cacheId,
   });
 
-  if (!comicData?.steps?.every((step) => step.status === "complete")) {
+  if (!comicData?.steps?.every((step: Step) => step.status === "complete")) {
     return <div>Loading...</div>;
   }
 
