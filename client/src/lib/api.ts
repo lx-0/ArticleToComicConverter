@@ -46,3 +46,11 @@ export async function getDefaultPrompts(): Promise<{
   }
   return response.json();
 }
+
+export async function getRecentComics(): Promise<ComicGeneration[]> {
+  const response = await fetch(`${API_BASE}/comics/recent`);
+  if (!response.ok) {
+    throw new Error("Failed to fetch recent comics");
+  }
+  return response.json();
+}

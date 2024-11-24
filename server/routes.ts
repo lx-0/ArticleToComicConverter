@@ -1,13 +1,13 @@
-import type { Express } from "express";
-import { db } from "../db";
-import { comicGenerations } from "@db/schema";
+import type { Express, Request, Response } from "express";
 import { eq } from "drizzle-orm";
+import { db } from "db";
+import { comicGenerations } from "@db/schema";
 import { DEFAULT_PROMPTS } from "./constants";
 import { ComicService } from "./services/comic";
 import crypto from "crypto";
-import { Request, Response } from "express";
 
 export function registerRoutes(app: Express) {
+  // Generate comic
   app.post("/api/comic", async (req, res) => {
     try {
       const { url, numParts, summaryPrompt, imagePrompt } = req.body;
@@ -46,6 +46,7 @@ export function registerRoutes(app: Express) {
     }
   });
 
+  // Regenerate comic
   app.post("/api/comic/:cacheId/regenerate", async (req, res) => {
     try {
       const { cacheId } = req.params;
@@ -57,6 +58,7 @@ export function registerRoutes(app: Express) {
     }
   });
 
+  // Get comic generation by cache ID
   app.get("/api/comic/:cacheId", async (req, res) => {
     try {
       const { cacheId } = req.params;
@@ -84,8 +86,23 @@ export function registerRoutes(app: Express) {
       res.status(500).json({ error: "Failed to fetch comic generation" });
     }
   });
-  // Add endpoint to get default prompts
-  app.get("/api/prompts/defaults", (_req: Request, res: Response) => {
+
+  // Get default prompts
+  app.get("/api/prompts/default", (_req: Request, res: Response) => {
     res.json(DEFAULT_PROMPTS);
+  });
+
+  // Get recent comics
+  app.get("/api/comics/recent", async (_req, res) => {
+    try {
+      const recentComics = await db.query.comicGenerations.findMany({
+        orderBy: (comics, { desc }) => [desc(comics.createdAt)],
+        limit: 10,
+      });
+      res.json(recentComics);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Failed to fetch recent comics" });
+    }
   });
 }
