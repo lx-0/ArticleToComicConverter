@@ -4,6 +4,7 @@ import { comicGenerations } from "@db/schema";
 import { eq } from "drizzle-orm";
 import { scrapeArticle } from "./services/scraper";
 import { generateSummaryAndPrompts, generateImage } from "./services/openai";
+import { ComicService } from "./services/comic";
 import crypto from "crypto";
 
 export function registerRoutes(app: Express) {
@@ -66,7 +67,10 @@ export function registerRoutes(app: Express) {
         return res.status(404).json({ error: "Not found" });
       }
 
-      res.json(generation);
+      res.json({
+        ...generation,
+        fromCache: true
+      });
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Failed to fetch comic generation" });
@@ -152,12 +156,13 @@ async function processComic(cacheId: string, url: string, numParts: number) {
       where: eq(comicGenerations.cacheId, cacheId),
     });
     
-    if (generation) {
+    if (generation?.steps) {
       const currentStep = generation.steps.findIndex(
         (s) => s.status === "in-progress",
       );
       if (currentStep !== -1) {
-        await updateStep(currentStep, "error", error.message);
+        const errorMessage = error instanceof Error ? error.message : String(error);
+        await updateStep(currentStep, "error", errorMessage);
       }
     }
   }

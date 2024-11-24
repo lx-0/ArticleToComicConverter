@@ -6,13 +6,21 @@ interface Props {
   summary: string[];
   imageUrls: string[];
   onRegenerate: () => void;
+  isFromCache?: boolean;
 }
 
-export function ComicResult({ summary, imageUrls, onRegenerate }: Props) {
+export function ComicResult({ summary, imageUrls, onRegenerate, isFromCache }: Props) {
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-purple-200">Your Comic Story</h2>
+        <div>
+          <h2 className="text-2xl font-bold text-purple-200">Your Comic Story</h2>
+          {isFromCache && (
+            <p className="text-sm text-purple-400 mt-1">
+              Loaded from cache
+            </p>
+          )}
+        </div>
         <Button
           onClick={onRegenerate}
           variant="outline"
