@@ -2,6 +2,7 @@ import type { Express } from "express";
 import { db } from "../db";
 import { comicGenerations } from "@db/schema";
 import { eq } from "drizzle-orm";
+import { DEFAULT_PROMPTS } from "./constants";
 import { scrapeArticle } from "./services/scraper";
 import { generateSummaryAndPrompts, generateImage } from "./services/openai";
 import { ComicService } from "./services/comic";
@@ -26,14 +27,7 @@ export function registerRoutes(app: Express) {
       }
 
       // Create new generation
-      await db.insert(comicGenerations).values({
-        url,
-        numParts,
-        cacheId,
-        steps: [{ step: "Fetching Article Content", status: "pending" }],
-        summary: [],
-        imageUrls: [],
-      });
+      await ComicService.initializeGeneration(url, numParts, cacheId);
 
       // Start processing in background
       ComicService.processComic(cacheId, url, numParts, summaryPrompt, imagePrompt).catch(console.error);
@@ -68,17 +62,22 @@ export function registerRoutes(app: Express) {
       }
 
       // Only mark as fromCache if the generation is complete
-      const isComplete = generation.steps.every(step => step.status === "complete");
+      const steps = generation.steps || [];
+      const isComplete = steps.every(step => step.status === "complete");
       
       res.json({
         ...generation,
         fromCache: isComplete,
-        steps: isComplete ? [] : generation.steps // Only show steps for in-progress generations
+        steps: isComplete ? [] : steps // Only show steps for in-progress generations
       });
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Failed to fetch comic generation" });
     }
+  });
+// Add endpoint to get default prompts
+  app.get("/api/prompts/defaults", (req: Request, res: Response) => {
+    res.json(DEFAULT_PROMPTS);
   });
 }
 
@@ -87,6 +86,8 @@ async function processComic(cacheId: string, url: string, numParts: number) {
     stepIndex: number,
     status: "pending" | "in-progress" | "complete" | "error",
     result?: string
+  
+
   ) => {
     const generation = await db.query.comicGenerations.findFirst({
       where: eq(comicGenerations.cacheId, cacheId),

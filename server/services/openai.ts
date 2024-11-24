@@ -1,4 +1,5 @@
 import OpenAI from "openai";
+import { DEFAULT_PROMPTS } from '../constants';
 
 // the newest OpenAI model is "gpt-4o" which was released May 13, 2024. do not change this unless explicitly requested by the user
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
@@ -8,9 +9,8 @@ export async function generateSummaryAndPrompts(
   numParts: number,
   summaryPrompt?: string,
 ): Promise<{ summaries: string[]; prompts: string[] }> {
-  const defaultPrompt = `You are a comic book artist and storyteller. Break down the given article into ${numParts} parts and create both a summary and an image generation prompt for each part. Generate JSON in this format: { "parts": [{ "summary": "string", "prompt": "string" }] }`;
-  
-  const finalPrompt = summaryPrompt?.replace('${numParts}', String(numParts)) || defaultPrompt;
+  const finalPrompt = summaryPrompt?.replace('${numParts}', String(numParts)) || 
+    DEFAULT_PROMPTS.summary.replace('${numParts}', String(numParts));
 
   const response = await openai.chat.completions.create({
     model: "gpt-4o",
@@ -43,8 +43,7 @@ export async function generateImage(
   prompt: string,
   imagePromptTemplate?: string,
 ): Promise<{ url: string }> {
-  const defaultTemplate = 'Create a comic panel style image: ${prompt}';
-  const finalPrompt = (imagePromptTemplate || defaultTemplate).replace('${prompt}', prompt);
+  const finalPrompt = (imagePromptTemplate || DEFAULT_PROMPTS.image).replace('${prompt}', prompt);
 
   const response = await openai.images.generate({
     model: "dall-e-3",

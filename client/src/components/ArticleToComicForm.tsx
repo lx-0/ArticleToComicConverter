@@ -9,6 +9,12 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { z } from "zod";
 import { useForm } from "react-hook-form";
+import { useEffect } from "react";
+
+async function getDefaultPrompts() {
+  const response = await fetch('/api/prompts/defaults');
+  return response.json();
+}
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { generateComic } from "@/lib/api";
@@ -40,9 +46,8 @@ export function ArticleToComicForm({ onGenerate }: Props) {
     defaultValues: {
       url: "https://waitbutwhy.com/table/iphone-thought-experiment",
       numParts: 3,
-      summaryPrompt:
-        'You are a comic book artist and storyteller. Break down the given article into ${numParts} parts and create both a summary and an image generation prompt for each part. Ensure that each image generation prompt has enough information about the general setting of the story, ensuring consistency across the images. Decide for a style and incorporate in each image generation prompt. Generate JSON in this format: { "parts": [{ "summary": "string", "prompt": "string" }] }',
-      imagePrompt: "Create a single comic panel style image: ${prompt}",
+      summaryPrompt: '', // Will be filled by useEffect
+      imagePrompt: '', // Will be filled by useEffect
     },
   });
 
