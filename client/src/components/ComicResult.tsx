@@ -64,45 +64,39 @@ export function ComicResult({ title, summary, imageUrls, onRegenerate, isFromCac
 
       <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
         <DialogContent className="max-w-[90vw] max-h-[90vh] bg-black/95 border-purple-500/30">
-          <Button
-            variant="ghost"
-            size="icon"
-            className="absolute right-4 top-4 text-purple-200 hover:text-purple-100 hover:bg-purple-500/20"
-            onClick={() => setSelectedImage(null)}
-          >
-            <X className="h-4 w-4" />
-          </Button>
           <DialogHeader className="mb-4">
             <DialogTitle className="text-xl font-bold text-purple-200">{title}</DialogTitle>
           </DialogHeader>
           <div className="relative w-full h-full flex flex-col items-center justify-center gap-4">
-            <img
-              src={selectedImage || ''}
-              alt="Full size comic panel"
-              className="max-w-full max-h-[70vh] object-contain rounded-lg"
-            />
-            {selectedImage && (
-              <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-4">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-purple-200 hover:text-purple-100 hover:bg-purple-500/20"
-                  onClick={() => setSelectedImage(imageUrls[currentIndex - 1])}
-                  disabled={currentIndex === 0}
-                >
-                  <ChevronLeft className="h-6 w-6" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="text-purple-200 hover:text-purple-100 hover:bg-purple-500/20"
-                  onClick={() => setSelectedImage(imageUrls[currentIndex + 1])}
-                  disabled={currentIndex === imageUrls.length - 1}
-                >
-                  <ChevronRight className="h-6 w-6" />
-                </Button>
-              </div>
-            )}
+            <div className="relative w-full">
+              <img
+                src={selectedImage || ''}
+                alt="Full size comic panel"
+                className="max-w-full max-h-[70vh] object-contain rounded-lg mx-auto"
+              />
+              {selectedImage && (
+                <div className="absolute inset-y-0 inset-x-4 flex items-center justify-between pointer-events-none">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="bg-black/50 text-purple-200 hover:text-purple-100 hover:bg-purple-500/20 pointer-events-auto"
+                    onClick={() => setSelectedImage(imageUrls[currentIndex - 1])}
+                    disabled={currentIndex === 0}
+                  >
+                    <ChevronLeft className="h-6 w-6" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="bg-black/50 text-purple-200 hover:text-purple-100 hover:bg-purple-500/20 pointer-events-auto"
+                    onClick={() => setSelectedImage(imageUrls[currentIndex + 1])}
+                    disabled={currentIndex === imageUrls.length - 1}
+                  >
+                    <ChevronRight className="h-6 w-6" />
+                  </Button>
+                </div>
+              )}
+            </div>
             <p className="text-purple-200 text-sm max-w-prose">
               {summary[currentIndex]}
             </p>
