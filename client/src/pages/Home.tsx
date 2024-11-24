@@ -27,8 +27,8 @@ export default function Home() {
       const data = query.state.data as ComicGeneration;
       // Stop polling when generation is complete or has error
       if (data?.steps && Array.isArray(data.steps) && data.steps.length > 0 && 
-          data.steps.every((step: Step) => 
-            step.status === "complete" || step.status === "error")) {
+          data.steps.every((step: any) => 
+            step?.status === "complete" || step?.status === "error")) {
         return false;
       }
       // Poll every 1 second while in progress
