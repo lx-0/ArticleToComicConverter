@@ -6,6 +6,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { regenerateComic } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { getComicGeneration } from "@/lib/api";
+import type { ComicGeneration, Step } from "@db/schema";
 import { Card, CardContent } from "@/components/ui/card";
 
 export default function Home() {
@@ -17,6 +18,14 @@ export default function Home() {
     queryKey: ["comic", cacheId],
     queryFn: () => getComicGeneration(cacheId!),
     enabled: !!cacheId,
+    refetchInterval: (data: ComicGeneration | undefined) => {
+      // Stop polling when generation is complete or has error
+      if (data?.steps?.every((step: Step) => step.status === "complete" || step.status === "error")) {
+        return false;
+      }
+      // Poll every 1 second while in progress
+      return 1000;
+    },
   });
 
   return (

@@ -35,3 +35,14 @@ export async function regenerateComic(cacheId: string): Promise<void> {
     throw new Error("Failed to regenerate comic");
   }
 }
+
+export async function getDefaultPrompts(): Promise<{
+  summary: string;
+  image: string;
+}> {
+  const response = await fetch(`${API_BASE}/prompts/defaults`);
+  if (!response.ok) {
+    throw new Error("Failed to fetch default prompts");
+  }
+  return response.json();
+}
