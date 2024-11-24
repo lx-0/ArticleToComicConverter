@@ -116,233 +116,124 @@ export class ComicService {
     summaryPrompt?: string,
     imagePrompt?: string,
   ) {
-    try {
-      // Check cache step
-      await this.updateStep(cacheId, "Checking Cache", "in-progress");
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      await this.updateStep(
-        cacheId,
-        "Checking Cache",
-        "complete",
-        "Cache check completed",
-      );
-
-      // Validate URL step
-      await this.updateStep(cacheId, "Validating URL", "in-progress");
-      try {
-        new URL(url);
-        await this.updateStep(
-          cacheId,
-          "Validating URL",
-          "complete",
-          "URL validated successfully",
-        );
-      } catch {
-        throw new Error("Invalid URL provided");
-      }
-
-      // Initialize article fetch
-      await this.updateStep(
-        cacheId,
-        "Initializing Article Fetch",
-        "in-progress",
-      );
-      await new Promise((resolve) => setTimeout(resolve, 300));
-      await this.updateStep(
-        cacheId,
-        "Initializing Article Fetch",
-        "complete",
-        "Fetch initialized",
-      );
-
-      // Download article content
-      await this.updateStep(
-        cacheId,
-        "Downloading Article Content",
-        "in-progress",
-      );
-      const articleText = await scrapeArticle(url);
-      await this.updateStep(
-        cacheId,
-        "Downloading Article Content",
-        "complete",
-        "Article downloaded",
-      );
-
-      // Process article content
-      await this.updateStep(
-        cacheId,
-        "Processing Article Content",
-        "in-progress",
-      );
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      await this.updateStep(
-        cacheId,
-        "Processing Article Content",
-        "complete",
-        "Content processed",
-      );
-
-      // Extract main content
-      await this.updateStep(cacheId, "Extracting Main Content", "in-progress");
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      await this.updateStep(
-        cacheId,
-        "Extracting Main Content",
-        "complete",
-        "Main content extracted",
-      );
-
-      // Analyze structure
-      await this.updateStep(
-        cacheId,
-        "Analyzing Article Structure",
-        "in-progress",
-      );
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      await this.updateStep(
-        cacheId,
-        "Analyzing Article Structure",
-        "complete",
-        "Article structure analyzed",
-      );
-
-      // Prepare text for summary
-      await this.updateStep(
-        cacheId,
-        "Preparing Text for Summary",
-        "in-progress",
-      );
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      await this.updateStep(
-        cacheId,
-        "Preparing Text for Summary",
-        "complete",
-        "Text prepared for summarization",
-      );
-
-      // Generate summary and prompts
-      await this.updateStep(cacheId, "Generating Summary", "in-progress");
-      const { summaries, prompts } = await generateSummaryAndPrompts(
-        articleText,
-        numParts,
-        summaryPrompt,
-      );
-      await this.updateStep(
-        cacheId,
-        "Generating Summary",
-        "complete",
-        "Generated summaries and prompts",
-      );
-
-      // Update summaries in database
-      await this.updateGeneration(cacheId, { summary: summaries });
-
-      // Process each part
-      const imageUrls: string[] = [];
-      for (let i = 0; i < numParts; i++) {
-        const partNum = i + 1;
-
-        // Create prompt
-        await this.updateStep(
-          cacheId,
-          `Creating Prompt for Part ${partNum}`,
-          "in-progress",
-        );
-        await new Promise((resolve) => setTimeout(resolve, 500));
-        await this.updateStep(
-          cacheId,
-          `Creating Prompt for Part ${partNum}`,
-          "complete",
-          "Created initial prompt",
-        );
-
-        // Optimize prompt
-        await this.updateStep(
-          cacheId,
-          `Optimizing Prompt for Part ${partNum}`,
-          "in-progress",
-        );
-        await new Promise((resolve) => setTimeout(resolve, 800));
-        await this.updateStep(
-          cacheId,
-          `Optimizing Prompt for Part ${partNum}`,
-          "complete",
-          "Optimized prompt for better results",
-        );
-
-        // Generate image
-        await this.updateStep(
-          cacheId,
-          `Generating Image for Part ${partNum}`,
-          "in-progress",
-        );
-        const { url: imageUrl } = await generateImage(prompts[i], imagePrompt);
-        imageUrls.push(imageUrl);
-        await this.updateStep(
-          cacheId,
-          `Generating Image for Part ${partNum}`,
-          "complete",
-          "Generated base image",
-        );
-
-        // Process image
-        await this.updateStep(
-          cacheId,
-          `Processing Image for Part ${partNum}`,
-          "in-progress",
-        );
-        await new Promise((resolve) => setTimeout(resolve, 600));
-        await this.updateStep(
-          cacheId,
-          `Processing Image for Part ${partNum}`,
-          "complete",
-          "Applied comic style effects",
-        );
-      }
-
-      // Assemble and finalize
-      await this.updateStep(cacheId, "Assembling Comic Layout", "in-progress");
-      await this.updateGeneration(cacheId, { imageUrls });
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      await this.updateStep(
-        cacheId,
-        "Assembling Comic Layout",
-        "complete",
-        "Layout assembled",
-      );
-
-      await this.updateStep(cacheId, "Finalizing Comic", "in-progress");
-      await new Promise((resolve) => setTimeout(resolve, 500));
-      await this.updateStep(
-        cacheId,
-        "Finalizing Comic",
-        "complete",
-        "Comic generation completed",
-      );
-    } catch (error: unknown) {
-      console.error("Error processing comic:", error);
-      const generation = await db.query.comicGenerations.findFirst({
-        where: eq(comicGenerations.cacheId, cacheId),
-      });
-
-      if (generation?.steps) {
-        const currentStepObj = generation.steps.find(
-          (s) => s.status === "in-progress",
-        );
-        if (currentStepObj) {
-          const errorMessage =
-            error instanceof Error ? error.message : String(error);
-          await this.updateStep(
-            cacheId,
-            currentStepObj.step,
-            "error",
-            `Error: ${errorMessage}`,
-          );
+    // Start the chain of promises
+    return Promise.resolve()
+      .then(async () => {
+        // Check cache step
+        await this.updateStep(cacheId, "Checking Cache", "in-progress");
+        await new Promise(resolve => setTimeout(resolve, 500));
+        await this.updateStep(cacheId, "Checking Cache", "complete", "Cache check completed");
+      })
+      .then(async () => {
+        // Validate URL step
+        await this.updateStep(cacheId, "Validating URL", "in-progress");
+        try {
+          new URL(url);
+          await this.updateStep(cacheId, "Validating URL", "complete", "URL validated successfully");
+        } catch {
+          throw new Error("Invalid URL provided");
         }
-      }
-      throw error;
-    }
+      })
+      .then(async () => {
+        // Initialize article fetch
+        await this.updateStep(cacheId, "Initializing Article Fetch", "in-progress");
+        await new Promise(resolve => setTimeout(resolve, 300));
+        await this.updateStep(cacheId, "Initializing Article Fetch", "complete", "Fetch initialized");
+      })
+      .then(async () => {
+        // Download article content
+        await this.updateStep(cacheId, "Downloading Article Content", "in-progress");
+        const articleText = await scrapeArticle(url);
+        await this.updateStep(cacheId, "Downloading Article Content", "complete", "Article downloaded");
+        return articleText;
+      })
+      .then(async (articleText) => {
+        // Process article content
+        await this.updateStep(cacheId, "Processing Article Content", "in-progress");
+        await new Promise(resolve => setTimeout(resolve, 500));
+        await this.updateStep(cacheId, "Processing Article Content", "complete", "Content processed");
+        return articleText;
+      })
+      .then(async (articleText) => {
+        // Extract main content
+        await this.updateStep(cacheId, "Extracting Main Content", "in-progress");
+        await new Promise(resolve => setTimeout(resolve, 800));
+        await this.updateStep(cacheId, "Extracting Main Content", "complete", "Main content extracted");
+        return articleText;
+      })
+      .then(async (articleText) => {
+        // Analyze structure
+        await this.updateStep(cacheId, "Analyzing Article Structure", "in-progress");
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        await this.updateStep(cacheId, "Analyzing Article Structure", "complete", "Article structure analyzed");
+        return articleText;
+      })
+      .then(async (articleText) => {
+        // Prepare text for summary
+        await this.updateStep(cacheId, "Preparing Text for Summary", "in-progress");
+        await new Promise(resolve => setTimeout(resolve, 500));
+        await this.updateStep(cacheId, "Preparing Text for Summary", "complete", "Text prepared for summarization");
+        return articleText;
+      })
+      .then(async (articleText) => {
+        // Generate summary and prompts
+        await this.updateStep(cacheId, "Generating Summary", "in-progress");
+        const { summaries, prompts } = await generateSummaryAndPrompts(articleText, numParts, summaryPrompt);
+        await this.updateStep(cacheId, "Generating Summary", "complete", "Generated summaries and prompts");
+        await this.updateGeneration(cacheId, { summary: summaries });
+        return prompts;
+      })
+      .then(async (prompts) => {
+        // Process each part
+        const imageUrls: string[] = [];
+        for (let i = 0; i < numParts; i++) {
+          const partNum = i + 1;
+          
+          await this.updateStep(cacheId, `Creating Prompt for Part ${partNum}`, "in-progress");
+          await new Promise(resolve => setTimeout(resolve, 500));
+          await this.updateStep(cacheId, `Creating Prompt for Part ${partNum}`, "complete", "Created initial prompt");
+
+          await this.updateStep(cacheId, `Optimizing Prompt for Part ${partNum}`, "in-progress");
+          await new Promise(resolve => setTimeout(resolve, 800));
+          await this.updateStep(cacheId, `Optimizing Prompt for Part ${partNum}`, "complete", "Optimized prompt for better results");
+
+          await this.updateStep(cacheId, `Generating Image for Part ${partNum}`, "in-progress");
+          const { url: imageUrl } = await generateImage(prompts[i], imagePrompt);
+          imageUrls.push(imageUrl);
+          await this.updateStep(cacheId, `Generating Image for Part ${partNum}`, "complete", "Generated base image");
+
+          await this.updateStep(cacheId, `Processing Image for Part ${partNum}`, "in-progress");
+          await new Promise(resolve => setTimeout(resolve, 600));
+          await this.updateStep(cacheId, `Processing Image for Part ${partNum}`, "complete", "Applied comic style effects");
+        }
+        return imageUrls;
+      })
+      .then(async (imageUrls) => {
+        // Assemble and finalize
+        await this.updateStep(cacheId, "Assembling Comic Layout", "in-progress");
+        await this.updateGeneration(cacheId, { imageUrls });
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        await this.updateStep(cacheId, "Assembling Comic Layout", "complete", "Layout assembled");
+
+        await this.updateStep(cacheId, "Finalizing Comic", "in-progress");
+        await new Promise(resolve => setTimeout(resolve, 500));
+        await this.updateStep(cacheId, "Finalizing Comic", "complete", "Comic generation completed");
+      })
+      .catch(async (error: unknown) => {
+        console.error("Error processing comic:", error);
+        const generation = await db.query.comicGenerations.findFirst({
+          where: eq(comicGenerations.cacheId, cacheId),
+        });
+
+        if (generation?.steps) {
+          const currentStepObj = generation.steps.find(s => s.status === "in-progress");
+          if (currentStepObj) {
+            const errorMessage = error instanceof Error ? error.message : String(error);
+            await this.updateStep(cacheId, currentStepObj.step, "error", `Error: ${errorMessage}`);
+          }
+        }
+        throw error;
+      });
   }
 
   static async regenerateComic(cacheId: string) {
@@ -354,7 +245,7 @@ export class ComicService {
       throw new Error("Comic generation not found");
     }
 
-    // Reset steps and results but keep the prompts
+    // Reset steps and results
     const initialSteps = this.getInitialSteps(generation.numParts);
     await this.updateGeneration(cacheId, {
       steps: JSON.parse(JSON.stringify(initialSteps)),
@@ -362,15 +253,17 @@ export class ComicService {
       imageUrls: [],
     });
 
-    // Start new processing with the same prompts, handle null values
-    setTimeout(() => {
-      this.processComic(
-        cacheId,
-        generation.url,
-        generation.numParts,
-        generation.summaryPrompt || undefined,
-        generation.imagePrompt || undefined,
-      ).catch(console.error);
-    }, 100);
+    // Start processing with promises
+    Promise.resolve()
+      .then(() => {
+        return this.processComic(
+          cacheId,
+          generation.url,
+          generation.numParts,
+          generation.summaryPrompt || undefined,
+          generation.imagePrompt || undefined
+        );
+      })
+      .catch(console.error);
   }
 }

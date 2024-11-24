@@ -3,8 +3,6 @@ import { db } from "../db";
 import { comicGenerations } from "@db/schema";
 import { eq } from "drizzle-orm";
 import { DEFAULT_PROMPTS } from "./constants";
-import { scrapeArticle } from "./services/scraper";
-import { generateSummaryAndPrompts, generateImage } from "./services/openai";
 import { ComicService } from "./services/comic";
 import crypto from "crypto";
 import { Request, Response } from "express";
@@ -89,5 +87,3 @@ export function registerRoutes(app: Express) {
     res.json(DEFAULT_PROMPTS);
   });
 }
-
-
