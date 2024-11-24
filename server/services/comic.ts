@@ -95,13 +95,14 @@ export class ComicService {
     return initialSteps;
   }
 
-  private static async downloadAndStoreImage(imageUrl: string, cacheId: string, partNum: number): Promise<string> {
+  private static async storeImage(imageUrl: string): Promise<{ mime: string; data: string }> {
     const response = await fetch(imageUrl);
     const buffer = await response.arrayBuffer();
-    const fileName = `${cacheId}-${partNum}.png`;
-    const filePath = path.join(process.cwd(), 'public', 'images', fileName);
-    await fs.writeFile(filePath, Buffer.from(buffer));
-    return `/images/${fileName}`;
+    const mime = response.headers.get('content-type') || 'image/png';
+    return {
+      mime,
+      data: Buffer.from(buffer).toString('base64')
+    };
   }
 
   static async processComic(
@@ -263,9 +264,15 @@ export class ComicService {
                 throw new Error("Invalid image URL received");
               }
 
-              // Download and store the image
-              const storedImageUrl = await this.downloadAndStoreImage(imageUrl, cacheId, partNum);
+              // Store the image in the database
+              const imageData = await this.storeImage(imageUrl);
+              const storedImageUrl = `/api/images/${cacheId}/${i}`;
               imageUrls.push(storedImageUrl);
+              await db.update(comicGenerations)
+                .set({ 
+                  imageData: sql`array_append(image_data, ${JSON.stringify(imageData)}::jsonb)`
+                })
+                .where(eq(comicGenerations.cacheId, cacheId));
               await this.updateStep(
                 cacheId,
                 `Generating Image for Part ${partNum}`,

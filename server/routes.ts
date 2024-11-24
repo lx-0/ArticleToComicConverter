@@ -106,4 +106,26 @@ export function registerRoutes(app: Express) {
       res.status(500).json({ error: "Failed to fetch recent comics" });
     }
   });
+
+  // Serve images from database
+  app.get("/api/images/:cacheId/:index", async (req, res) => {
+    try {
+      const { cacheId, index } = req.params;
+      const comic = await db.query.comicGenerations.findFirst({
+        where: eq(comicGenerations.cacheId, cacheId)
+      });
+      
+      if (!comic?.imageData?.[Number(index)]) {
+        return res.status(404).send('Image not found');
+      }
+
+      const { mime, data } = comic.imageData[Number(index)];
+      const buffer = Buffer.from(data, 'base64');
+      res.setHeader('Content-Type', mime);
+      res.send(buffer);
+    } catch (error) {
+      console.error(error);
+      res.status(500).send('Error fetching image');
+    }
+  });
 }
