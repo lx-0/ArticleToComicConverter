@@ -1,6 +1,7 @@
 import { ArticleToComicForm } from "@/components/ArticleToComicForm";
 import { ProcessStepper } from "@/components/ProcessStepper";
 import { ComicResult } from "@/components/ComicResult";
+import { RecentComics } from "@/components/RecentComics";
 import { useState, useEffect } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { regenerateComic } from "@/lib/api";
@@ -162,6 +163,7 @@ export default function Home() {
             )}
           </div>
         )}
+        {!cacheId && <RecentComics />}
       </div>
     </div>
   );
