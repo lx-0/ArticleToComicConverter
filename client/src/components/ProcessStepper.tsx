@@ -9,6 +9,10 @@ interface Step {
   step: string;
   status: "pending" | "in-progress" | "complete" | "error";
   result?: string;
+  content?: {
+    type: "text" | "image";
+    data: string;
+  };
 }
 
 interface Props {
@@ -66,6 +70,24 @@ export function ProcessStepper({ steps, isFromCache }: Props) {
             <h3 className="font-medium text-purple-200">{step.step}</h3>
             {step.result && (
               <p className="mt-1 text-sm text-gray-400">{step.result}</p>
+            )}
+            {step.content && (
+              <div className="mt-4">
+                {step.content.type === "text" && (
+                  <div className="bg-black/20 p-3 rounded-md text-sm font-mono text-purple-200">
+                    {step.content.data}
+                  </div>
+                )}
+                {step.content.type === "image" && (
+                  <div className="mt-2">
+                    <img 
+                      src={step.content.data} 
+                      alt="Step result"
+                      className="rounded-md max-h-48 object-cover"
+                    />
+                  </div>
+                )}
+              </div>
             )}
           </div>
         </div>

@@ -8,6 +8,10 @@ const Step = z.object({
   step: z.string(),
   status: StepStatus,
   result: z.string().optional(),
+  content: z.object({
+    type: z.enum(["text", "image"]),
+    data: z.string()
+  }).optional()
 });
 
 export const comicGenerations = pgTable("comic_generations", {

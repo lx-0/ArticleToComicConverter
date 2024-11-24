@@ -21,6 +21,7 @@ export class ComicService {
     stepKey: string,
     status: "pending" | "in-progress" | "complete" | "error",
     result?: string,
+    content?: { type: "text" | "image"; data: string }
   ): Promise<ComicGeneration["steps"]> {
     const generation = await db.query.comicGenerations.findFirst({
       where: eq(comicGenerations.cacheId, cacheId),
@@ -40,7 +41,7 @@ export class ComicService {
       throw new Error(`Invalid step key: ${stepKey}`);
     }
 
-    steps[stepIndex] = { ...steps[stepIndex], status, result };
+    steps[stepIndex] = { ...steps[stepIndex], status, result, content };
 
     // If step completed successfully, update the next step's status
     if (status === "complete" && stepIndex < steps.length - 1) {
@@ -167,7 +168,13 @@ export class ComicService {
                 throw new Error(`Invalid summary for part ${i + 1}`);
               }
             });
-            await this.updateStep(cacheId, "Generating Summary", "complete", "Generated summaries and prompts");
+            await this.updateStep(
+              cacheId,
+              "Generating Summary",
+              "complete",
+              "Generated summaries and prompts",
+              { type: "text", data: JSON.stringify(summaries, null, 2) }
+            );
             await this.updateGeneration(cacheId, { summary: summaries });
             return prompts;
           } catch (error) {
@@ -201,7 +208,13 @@ export class ComicService {
               }
               
               imageUrls.push(imageUrl);
-              await this.updateStep(cacheId, `Generating Image for Part ${partNum}`, "complete", "Generated comic panel");
+              await this.updateStep(
+                cacheId,
+                `Generating Image for Part ${partNum}`,
+                "complete",
+                "Generated comic panel",
+                { type: "image", data: imageUrl }
+              );
               break;
             } catch (error) {
               attempt++;
