@@ -72,9 +72,10 @@ export function registerRoutes(app: Express) {
 
       const steps = generation.steps || [];
       const isComplete = steps.every((step) => step.status === "complete");
-      
+
       // Only mark as fromCache if it was loaded from cache in the initial request
-      const fromCache = isComplete && steps[0]?.result === "Retrieved from cache";
+      const fromCache =
+        isComplete && steps[0]?.result === "Retrieved from cache";
 
       res.json({
         ...generation,
@@ -88,7 +89,7 @@ export function registerRoutes(app: Express) {
   });
 
   // Get default prompts
-  app.get("/api/prompts/default", (_req: Request, res: Response) => {
+  app.get("/api/prompts/defaults", (_req: Request, res: Response) => {
     res.json(DEFAULT_PROMPTS);
   });
 

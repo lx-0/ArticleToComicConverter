@@ -13,9 +13,11 @@ interface Props {
   isFromCache?: boolean;
   standalone?: boolean;
   cacheId?: string;
+  url?: string;
+  createdAt?: string | Date;
 }
 
-export function ComicResult({ title, summary, imageUrls, onRegenerate, isFromCache, standalone, cacheId }: Props) {
+export function ComicResult({ title, summary, imageUrls, onRegenerate, isFromCache, standalone, cacheId, url, createdAt }: Props) {
   const { toast } = useToast();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const currentIndex = imageUrls.findIndex(url => url === selectedImage);
@@ -25,6 +27,21 @@ export function ComicResult({ title, summary, imageUrls, onRegenerate, isFromCac
         <div>
           <div className="space-y-1">
             <h2 className="text-2xl font-bold text-purple-200">{title}</h2>
+            {standalone && url && createdAt && (
+              <div className="space-y-1">
+                <a 
+                  href={url}
+                  target="_blank"
+                  rel="noopener noreferrer" 
+                  className="text-sm text-purple-400/60 hover:text-purple-400 transition-colors block"
+                >
+                  {url}
+                </a>
+                <p className="text-sm text-purple-400/60">
+                  Created on {new Date(createdAt).toLocaleDateString()}
+                </p>
+              </div>
+            )}
             <p className="text-sm text-purple-400">Your Comic Story</p>
           </div>
           {isFromCache && (

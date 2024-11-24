@@ -26,6 +26,8 @@ export default function Comic() {
           imageUrls={comicData.imageUrls}
           isFromCache={comicData.fromCache}
           standalone
+          url={comicData.url}
+          createdAt={comicData.createdAt}
         />
       </div>
       <Footer />

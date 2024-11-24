@@ -1,3 +1,5 @@
+import type { ComicGeneration } from "@db/schema";
+
 const API_BASE = "/api";
 
 export async function generateComic(params: {
