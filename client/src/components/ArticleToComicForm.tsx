@@ -12,7 +12,7 @@ import { useForm } from "react-hook-form";
 import { useEffect } from "react";
 
 async function getDefaultPrompts() {
-  const response = await fetch('/api/prompts/defaults');
+  const response = await fetch("/api/prompts/defaults");
   return response.json();
 }
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -46,8 +46,8 @@ export function ArticleToComicForm({ onGenerate }: Props) {
     defaultValues: {
       url: "https://waitbutwhy.com/table/iphone-thought-experiment",
       numParts: 3,
-      summaryPrompt: '', // Will be filled by useEffect
-      imagePrompt: '', // Will be filled by useEffect
+      summaryPrompt: "", // Will be filled by useEffect
+      imagePrompt: "", // Will be filled by useEffect
     },
   });
 
