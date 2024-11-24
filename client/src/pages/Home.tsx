@@ -9,7 +9,11 @@ import { getComicGeneration } from "@/lib/api";
 import type { ComicGeneration, Step } from "@db/schema";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@/components/ui/collapsible";
 import { ChevronUp, ChevronDown } from "lucide-react";
 
 export default function Home() {
@@ -26,9 +30,15 @@ export default function Home() {
     refetchInterval: (query) => {
       const data = query.state.data as ComicGeneration;
       // Stop polling when generation is complete or has error
-      if (data?.steps && Array.isArray(data.steps) && data.steps.length > 0 && 
-          data.steps.every((step: any) => 
-            step?.status === "complete" || step?.status === "error")) {
+      if (
+        data?.steps &&
+        Array.isArray(data.steps) &&
+        data.steps.length > 0 &&
+        data.steps.every(
+          (step: any) =>
+            step?.status === "complete" || step?.status === "error",
+        )
+      ) {
         return false;
       }
       // Poll every 1 second while in progress
@@ -43,7 +53,10 @@ export default function Home() {
   }, [comicData?.steps]);
 
   useEffect(() => {
-    if (cacheId && comicData?.steps?.some((step: Step) => step.status === "in-progress")) {
+    if (
+      cacheId &&
+      comicData?.steps?.some((step: Step) => step.status === "in-progress")
+    ) {
       setShowForm(false);
     }
   }, [cacheId, comicData?.steps]);
@@ -69,16 +82,25 @@ export default function Home() {
             </CollapsibleTrigger>
             <CollapsibleTrigger asChild>
               <Button variant="ghost" size="sm" className="text-purple-400">
-                {showForm ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                {showForm ? (
+                  <ChevronUp className="h-4 w-4" />
+                ) : (
+                  <ChevronDown className="h-4 w-4" />
+                )}
               </Button>
             </CollapsibleTrigger>
           </div>
           <CollapsibleContent>
             <Card className="bg-black/50 border-purple-500/30">
               <CardContent className="p-6">
-                <ArticleToComicForm 
-                  onGenerate={setCacheId} 
-                  isGenerating={!!cacheId && comicData?.steps?.some((step: Step) => step.status === "in-progress")} 
+                <ArticleToComicForm
+                  onGenerate={setCacheId}
+                  isGenerating={
+                    !!cacheId &&
+                    comicData?.steps?.some(
+                      (step: Step) => step.status === "in-progress",
+                    )
+                  }
                 />
               </CardContent>
             </Card>
@@ -96,32 +118,42 @@ export default function Home() {
                 </CollapsibleTrigger>
                 <CollapsibleTrigger asChild>
                   <Button variant="ghost" size="sm" className="text-purple-400">
-                    {showProgress ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+                    {showProgress ? (
+                      <ChevronUp className="h-4 w-4" />
+                    ) : (
+                      <ChevronDown className="h-4 w-4" />
+                    )}
                   </Button>
                 </CollapsibleTrigger>
               </div>
               <CollapsibleContent>
-                <ProcessStepper 
-                  steps={comicData?.steps || []} 
+                <ProcessStepper
+                  steps={comicData?.steps || []}
                   isFromCache={comicData?.fromCache}
                 />
               </CollapsibleContent>
             </Collapsible>
-            
-            {comicData?.steps?.every((step: Step) => step.status === "complete") && (
+
+            {comicData?.steps?.every(
+              (step: Step) => step.status === "complete",
+            ) && (
               <ComicResult
                 title={comicData.title || "Untitled Comic"}
                 summary={comicData.summary}
                 imageUrls={comicData.imageUrls}
                 isFromCache={comicData.fromCache}
+                cacheId={comicData.cacheId}
                 onRegenerate={async () => {
                   try {
                     await regenerateComic(cacheId);
-                    await queryClient.invalidateQueries({ queryKey: ["comic", cacheId] });
+                    await queryClient.invalidateQueries({
+                      queryKey: ["comic", cacheId],
+                    });
                   } catch (error) {
                     toast({
                       title: "Error",
-                      description: "Failed to regenerate comic. Please try again.",
+                      description:
+                        "Failed to regenerate comic. Please try again.",
                       variant: "destructive",
                     });
                   }
