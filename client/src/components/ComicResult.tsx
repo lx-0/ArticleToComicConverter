@@ -1,19 +1,22 @@
 import { Button } from "@/components/ui/button";
+import { useToast } from "@/hooks/use-toast";
 import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { RefreshCw, Share, ChevronLeft, ChevronRight } from "lucide-react";
-import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 
 interface Props {
   title: string;
   summary: string[];
   imageUrls: string[];
-  onRegenerate: () => void;
+  onRegenerate?: () => Promise<void>;
   isFromCache?: boolean;
+  standalone?: boolean;
+  cacheId?: string;
 }
 
-export function ComicResult({ title, summary, imageUrls, onRegenerate, isFromCache }: Props) {
+export function ComicResult({ title, summary, imageUrls, onRegenerate, isFromCache, standalone, cacheId }: Props) {
+  const { toast } = useToast();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const currentIndex = imageUrls.findIndex(url => url === selectedImage);
   return (
