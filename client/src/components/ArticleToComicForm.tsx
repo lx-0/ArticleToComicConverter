@@ -41,7 +41,7 @@ export function ArticleToComicForm({ onGenerate, isGenerating }: Props) {
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      url: "https://waitbutwhy.com/table/iphone-thought-experiment",
+      url: "",
       numParts: 3,
       summaryPrompt: "",
       imagePrompt: "",
