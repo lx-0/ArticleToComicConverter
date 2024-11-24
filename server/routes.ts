@@ -13,7 +13,7 @@ export function registerRoutes(app: Express) {
       const { url, numParts, summaryPrompt, imagePrompt } = req.body;
       const cacheId = crypto
         .createHash("md5")
-        .update(`${url}-${numParts}`)
+        .update(`${url}-${numParts}-${summaryPrompt || ""}-${imagePrompt || ""}`)
         .digest("hex");
 
       // Check cache

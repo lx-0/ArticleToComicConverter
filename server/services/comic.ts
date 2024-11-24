@@ -232,7 +232,7 @@ export class ComicService {
       throw new Error("Comic generation not found");
     }
 
-    // Reset steps and results
+    // Reset steps and results but keep the prompts
     const initialSteps = this.getInitialSteps(generation.numParts);
     await this.updateGeneration(cacheId, {
       steps: JSON.parse(JSON.stringify(initialSteps)),
@@ -240,9 +240,15 @@ export class ComicService {
       imageUrls: [],
     });
 
-    // Start new processing with a slight delay to ensure UI updates
+    // Start new processing with the same prompts
     setTimeout(() => {
-      this.processComic(cacheId, generation.url, generation.numParts).catch(console.error);
+      this.processComic(
+        cacheId,
+        generation.url,
+        generation.numParts,
+        generation.summaryPrompt,
+        generation.imagePrompt
+      ).catch(console.error);
     }, 100);
   }
 }
