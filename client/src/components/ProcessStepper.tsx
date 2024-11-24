@@ -4,6 +4,7 @@ import {
   AlertCircle,
   ChevronRight,
 } from "lucide-react";
+import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
 
 interface Step {
   step: string;
@@ -44,57 +45,65 @@ export function ProcessStepper({ steps, isFromCache }: Props) {
   return (
     <div className="space-y-4">
       {steps.map((step, index) => (
-        <div
-          key={index}
-          className={`flex items-start p-4 rounded-lg transition-colors ${
+        <Collapsible key={index}>
+          <div className={`flex items-start p-4 rounded-lg transition-colors ${
             step.status === "in-progress"
               ? "bg-purple-900/20 border border-purple-500/30"
               : "bg-black/30"
-          }`}
-        >
-          <div className="mr-4">
-            {step.status === "complete" && (
-              <Check className="w-5 h-5 text-green-500" />
-            )}
-            {step.status === "in-progress" && (
-              <Loader2 className="w-5 h-5 text-purple-500 animate-spin" />
-            )}
-            {step.status === "error" && (
-              <AlertCircle className="w-5 h-5 text-red-500" />
-            )}
-            {step.status === "pending" && (
-              <ChevronRight className="w-5 h-5 text-gray-500" />
-            )}
-          </div>
-          <div className="flex-1">
-            <h3 className="font-medium text-purple-200">{step.step}</h3>
-            {step.result && (
-              <p className="mt-1 text-sm text-gray-400">{step.result}</p>
-            )}
-            {step.content && (
-              <div className="mt-4">
-                {step.content.type === "text" && (
-                  <div className="bg-black/20 p-3 rounded-md text-sm font-mono text-purple-200">
-                    {typeof step.content.data === 'string' ? (
-                      step.content.data
-                    ) : (
-                      <pre>{JSON.stringify(step.content.data, null, 2)}</pre>
-                    )}
-                  </div>
-                )}
-                {step.content.type === "image" && (
-                  <div className="mt-2">
-                    <img 
-                      src={step.content.data} 
-                      alt="Step result"
-                      className="rounded-md max-h-48 object-cover"
-                    />
-                  </div>
+          }`}>
+            <div className="mr-4">
+              {step.status === "complete" && (
+                <Check className="w-5 h-5 text-green-500" />
+              )}
+              {step.status === "in-progress" && (
+                <Loader2 className="w-5 h-5 text-purple-500 animate-spin" />
+              )}
+              {step.status === "error" && (
+                <AlertCircle className="w-5 h-5 text-red-500" />
+              )}
+              {step.status === "pending" && (
+                <ChevronRight className="w-5 h-5 text-gray-500" />
+              )}
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center gap-2">
+                <h3 className="font-medium text-purple-200">{step.step}</h3>
+                {step.content && (
+                  <CollapsibleTrigger className="ml-auto">
+                    <ChevronRight className="w-4 h-4 text-purple-400 transform transition-transform" />
+                  </CollapsibleTrigger>
                 )}
               </div>
-            )}
+              {step.result && (
+                <p className="mt-1 text-sm text-gray-400">{step.result}</p>
+              )}
+              {step.content && (
+                <CollapsibleContent>
+                  <div className="mt-4">
+                    {step.content.type === "text" && (
+                      <div className="bg-black/20 p-3 rounded-md text-sm font-mono text-purple-200">
+                        {typeof step.content.data === 'string' ? (
+                          step.content.data
+                        ) : (
+                          <pre>{JSON.stringify(step.content.data, null, 2)}</pre>
+                        )}
+                      </div>
+                    )}
+                    {step.content.type === "image" && (
+                      <div className="mt-2">
+                        <img 
+                          src={step.content.data} 
+                          alt="Step result"
+                          className="rounded-md max-h-48 object-cover"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </CollapsibleContent>
+              )}
+            </div>
           </div>
-        </div>
+        </Collapsible>
       ))}
     </div>
   );

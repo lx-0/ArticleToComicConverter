@@ -77,7 +77,7 @@ export function registerRoutes(app: Express) {
       res.json({
         ...generation,
         fromCache,
-        steps: isComplete ? [] : steps,
+        steps,
       });
     } catch (error) {
       console.error(error);
