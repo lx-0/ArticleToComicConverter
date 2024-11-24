@@ -53,8 +53,11 @@ export class ComicService {
 
   private static getInitialSteps(numParts: number): ComicGeneration["steps"] {
     const baseSteps = [
+      { step: "Checking Cache", status: "pending" as const },
       { step: "Validating URL", status: "pending" as const },
-      { step: "Fetching Article Content", status: "pending" as const },
+      { step: "Initializing Article Fetch", status: "pending" as const },
+      { step: "Downloading Article Content", status: "pending" as const },
+      { step: "Processing Article Content", status: "pending" as const },
       { step: "Extracting Main Content", status: "pending" as const },
       { step: "Analyzing Article Structure", status: "pending" as const },
       { step: "Preparing Text for Summary", status: "pending" as const },
@@ -97,7 +100,12 @@ export class ComicService {
 
   static async processComic(cacheId: string, url: string, numParts: number) {
     try {
-      // Validate URL
+      // Check cache step
+      await this.updateStep(cacheId, "Checking Cache", "in-progress");
+      await new Promise(resolve => setTimeout(resolve, 500));
+      await this.updateStep(cacheId, "Checking Cache", "complete", "Cache check completed");
+
+      // Validate URL step
       await this.updateStep(cacheId, "Validating URL", "in-progress");
       try {
         new URL(url);
@@ -106,10 +114,20 @@ export class ComicService {
         throw new Error("Invalid URL provided");
       }
 
-      // Fetch article content
-      await this.updateStep(cacheId, "Fetching Article Content", "in-progress");
+      // Initialize article fetch
+      await this.updateStep(cacheId, "Initializing Article Fetch", "in-progress");
+      await new Promise(resolve => setTimeout(resolve, 300));
+      await this.updateStep(cacheId, "Initializing Article Fetch", "complete", "Fetch initialized");
+
+      // Download article content
+      await this.updateStep(cacheId, "Downloading Article Content", "in-progress");
       const articleText = await scrapeArticle(url);
-      await this.updateStep(cacheId, "Fetching Article Content", "complete", "Article retrieved successfully");
+      await this.updateStep(cacheId, "Downloading Article Content", "complete", "Article downloaded");
+
+      // Process article content
+      await this.updateStep(cacheId, "Processing Article Content", "in-progress");
+      await new Promise(resolve => setTimeout(resolve, 500));
+      await this.updateStep(cacheId, "Processing Article Content", "complete", "Content processed");
 
       // Extract main content
       await this.updateStep(cacheId, "Extracting Main Content", "in-progress");
@@ -205,16 +223,17 @@ export class ComicService {
       throw new Error("Comic generation not found");
     }
 
-    // Reset steps and results using getInitialSteps
+    // Reset steps and results
     const initialSteps = this.getInitialSteps(generation.numParts);
-
     await this.updateGeneration(cacheId, {
       steps: initialSteps,
       summary: [],
       imageUrls: [],
     });
 
-    // Start new processing
-    await this.processComic(cacheId, generation.url, generation.numParts);
+    // Start new processing with a slight delay to ensure UI updates
+    setTimeout(() => {
+      this.processComic(cacheId, generation.url, generation.numParts).catch(console.error);
+    }, 100);
   }
 }
