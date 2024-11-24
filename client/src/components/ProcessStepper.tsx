@@ -5,6 +5,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import { Collapsible, CollapsibleTrigger, CollapsibleContent } from "@/components/ui/collapsible";
+import { Progress } from "@/components/ui/progress";
 
 interface Step {
   step: string;
@@ -42,67 +43,77 @@ export function ProcessStepper({ steps, isFromCache }: Props) {
   }
 
   // Original stepper implementation for new generations
+  const completedSteps = steps.filter(step => step.status === "complete").length;
+  const progress = (completedSteps / steps.length) * 100;
+
   return (
     <div className="space-y-4">
+      <div className="space-y-2">
+        <div className="flex justify-between text-sm text-purple-200">
+          <span>{completedSteps} of {steps.length} steps completed</span>
+          <span>{Math.round(progress)}%</span>
+        </div>
+        <Progress value={progress} className="bg-black/30 h-2" indicatorClassName="bg-purple-500" />
+      </div>
       {steps.map((step, index) => (
         <Collapsible key={index}>
-          <div className={`flex items-start p-4 rounded-lg transition-colors ${
-            step.status === "in-progress"
-              ? "bg-purple-900/20 border border-purple-500/30"
-              : "bg-black/30"
-          }`}>
-            <div className="mr-4">
-              {step.status === "complete" && (
-                <Check className="w-5 h-5 text-green-500" />
-              )}
-              {step.status === "in-progress" && (
-                <Loader2 className="w-5 h-5 text-purple-500 animate-spin" />
-              )}
-              {step.status === "error" && (
-                <AlertCircle className="w-5 h-5 text-red-500" />
-              )}
-              {step.status === "pending" && (
-                <ChevronRight className="w-5 h-5 text-gray-500" />
-              )}
-            </div>
-            <div className="flex-1">
-              <div className="flex items-center gap-2">
-                <h3 className="font-medium text-purple-200">{step.step}</h3>
-                {step.content && (
-                  <CollapsibleTrigger className="ml-auto">
-                    <ChevronRight className="w-4 h-4 text-purple-400 transform transition-transform" />
-                  </CollapsibleTrigger>
+          <CollapsibleTrigger className="w-full text-left">
+            <div className={`flex items-start p-4 rounded-lg transition-colors ${
+              step.status === "in-progress"
+                ? "bg-purple-900/20 border border-purple-500/30"
+                : "bg-black/30"
+            }`}>
+              <div className="mr-4">
+                {step.status === "complete" && (
+                  <Check className="w-5 h-5 text-green-500" />
+                )}
+                {step.status === "in-progress" && (
+                  <Loader2 className="w-5 h-5 text-purple-500 animate-spin" />
+                )}
+                {step.status === "error" && (
+                  <AlertCircle className="w-5 h-5 text-red-500" />
+                )}
+                {step.status === "pending" && (
+                  <ChevronRight className="w-5 h-5 text-gray-500" />
                 )}
               </div>
-              {step.result && (
-                <p className="mt-1 text-sm text-gray-400">{step.result}</p>
-              )}
-              {step.content && (
-                <CollapsibleContent>
-                  <div className="mt-4">
-                    {step.content.type === "text" && (
-                      <div className="bg-black/20 p-3 rounded-md text-sm font-mono text-purple-200">
-                        {typeof step.content.data === 'string' ? (
-                          step.content.data
-                        ) : (
-                          <pre>{JSON.stringify(step.content.data, null, 2)}</pre>
-                        )}
-                      </div>
-                    )}
-                    {step.content.type === "image" && (
-                      <div className="mt-2">
-                        <img 
-                          src={step.content.data} 
-                          alt="Step result"
-                          className="rounded-md max-h-48 object-cover"
-                        />
-                      </div>
+              <div className="flex-1">
+                <div className="flex items-center gap-2">
+                  <h3 className="font-medium text-purple-200">{step.step}</h3>
+                  {step.content && (
+                    <ChevronRight className="w-4 h-4 text-purple-400 transform transition-transform ml-auto" />
+                  )}
+                </div>
+                {step.result && (
+                  <p className="mt-1 text-sm text-gray-400">{step.result}</p>
+                )}
+              </div>
+            </div>
+          </CollapsibleTrigger>
+          {step.content && (
+            <CollapsibleContent>
+              <div className="mt-4">
+                {step.content.type === "text" && (
+                  <div className="bg-black/20 p-3 rounded-md text-sm font-mono text-purple-200">
+                    {typeof step.content.data === 'string' ? (
+                      step.content.data
+                    ) : (
+                      <pre>{JSON.stringify(step.content.data, null, 2)}</pre>
                     )}
                   </div>
-                </CollapsibleContent>
-              )}
-            </div>
-          </div>
+                )}
+                {step.content.type === "image" && (
+                  <div className="mt-2">
+                    <img 
+                      src={step.content.data} 
+                      alt="Step result"
+                      className="rounded-md max-h-48 object-cover"
+                    />
+                  </div>
+                )}
+              </div>
+            </CollapsibleContent>
+          )}
         </Collapsible>
       ))}
     </div>
