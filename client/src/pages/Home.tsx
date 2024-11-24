@@ -15,6 +15,7 @@ import { ChevronUp, ChevronDown } from "lucide-react";
 export default function Home() {
   const [cacheId, setCacheId] = useState<string | null>(null);
   const [showProgress, setShowProgress] = useState(true);
+  const [showForm, setShowForm] = useState(true);
   const queryClient = useQueryClient();
   const { toast } = useToast();
 
@@ -41,6 +42,12 @@ export default function Home() {
     }
   }, [comicData?.steps]);
 
+  useEffect(() => {
+    if (cacheId && comicData?.steps?.some((step: Step) => step.status === "in-progress")) {
+      setShowForm(false);
+    }
+  }, [cacheId, comicData?.steps]);
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-black via-purple-950 to-black text-white p-6">
       <div className="max-w-4xl mx-auto space-y-8">
@@ -53,17 +60,40 @@ export default function Home() {
           </p>
         </header>
 
-        <Card className="bg-black/50 border-purple-500/30">
-          <CardContent className="p-6">
-            <ArticleToComicForm onGenerate={setCacheId} />
-          </CardContent>
-        </Card>
+        <Collapsible open={showForm} onOpenChange={setShowForm}>
+          <div className="flex items-center justify-between mb-4">
+            <CollapsibleTrigger asChild>
+              <h3 className="text-lg font-medium text-purple-200 cursor-pointer hover:text-purple-300 transition-colors">
+                Generate New Comic
+              </h3>
+            </CollapsibleTrigger>
+            <CollapsibleTrigger asChild>
+              <Button variant="ghost" size="sm" className="text-purple-400">
+                {showForm ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}
+              </Button>
+            </CollapsibleTrigger>
+          </div>
+          <CollapsibleContent>
+            <Card className="bg-black/50 border-purple-500/30">
+              <CardContent className="p-6">
+                <ArticleToComicForm 
+                  onGenerate={setCacheId} 
+                  isGenerating={!!cacheId && comicData?.steps?.some((step: Step) => step.status === "in-progress")} 
+                />
+              </CardContent>
+            </Card>
+          </CollapsibleContent>
+        </Collapsible>
 
         {cacheId && (
           <div className="space-y-8">
             <Collapsible open={showProgress} onOpenChange={setShowProgress}>
               <div className="flex items-center justify-between mb-4">
-                <h3 className="text-lg font-medium text-purple-200">Generation Progress</h3>
+                <CollapsibleTrigger asChild>
+                  <h3 className="text-lg font-medium text-purple-200 cursor-pointer hover:text-purple-300 transition-colors">
+                    Generation Progress
+                  </h3>
+                </CollapsibleTrigger>
                 <CollapsibleTrigger asChild>
                   <Button variant="ghost" size="sm" className="text-purple-400">
                     {showProgress ? <ChevronUp className="h-4 w-4" /> : <ChevronDown className="h-4 w-4" />}

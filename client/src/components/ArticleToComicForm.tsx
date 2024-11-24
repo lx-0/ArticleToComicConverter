@@ -33,6 +33,7 @@ type FormSchema = z.infer<typeof formSchema>;
 
 interface Props {
   onGenerate: (cacheId: string) => void;
+  isGenerating?: boolean;
 }
 
 export function ArticleToComicForm({ onGenerate }: Props) {
@@ -163,7 +164,7 @@ export function ArticleToComicForm({ onGenerate }: Props) {
         <Button
           type="submit"
           className="w-full bg-purple-600 hover:bg-purple-700"
-          disabled={mutation.isPending}
+          disabled={mutation.isPending || isGenerating}
         >
           {mutation.isPending ? "Generating..." : "Generate Comic"}
         </Button>
