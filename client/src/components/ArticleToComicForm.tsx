@@ -11,10 +11,6 @@ import { z } from "zod";
 import { useForm } from "react-hook-form";
 import { useEffect } from "react";
 
-async function getDefaultPrompts() {
-  const response = await fetch("/api/prompts/defaults");
-  return response.json();
-}
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
 import { generateComic } from "@/lib/api";
@@ -46,19 +42,19 @@ export function ArticleToComicForm({ onGenerate }: Props) {
     defaultValues: {
       url: "https://waitbutwhy.com/table/iphone-thought-experiment",
       numParts: 3,
-      summaryPrompt: "", // Will be filled by useEffect
-      imagePrompt: "", // Will be filled by useEffect
+      summaryPrompt: "",
+      imagePrompt: "",
     },
   });
   useEffect(() => {
-    fetch('/api/prompts/defaults')
-      .then(response => response.json())
-      .then(prompts => {
-        form.setValue('summaryPrompt', prompts.summary);
-        form.setValue('imagePrompt', prompts.image);
+    fetch("/api/prompts/defaults")
+      .then((response) => response.json())
+      .then((prompts) => {
+        form.setValue("summaryPrompt", prompts.summary);
+        form.setValue("imagePrompt", prompts.image);
       })
-      .catch(error => {
-        console.error('Failed to fetch default prompts:', error);
+      .catch((error) => {
+        console.error("Failed to fetch default prompts:", error);
       });
   }, []); // Empty dependency array means this runs once when component mounts
 
@@ -136,7 +132,7 @@ export function ArticleToComicForm({ onGenerate }: Props) {
                   <FormControl>
                     <textarea
                       {...field}
-                      className="w-full min-h-[100px] bg-black/30 border-purple-500/30 rounded-md p-2 text-purple-200"
+                      className="w-full min-h-[150px] bg-black/30 border-purple-500/30 rounded-md p-2 text-purple-200"
                       placeholder="Customize how summaries are generated. Use ${numParts} as variable."
                     />
                   </FormControl>
@@ -155,7 +151,7 @@ export function ArticleToComicForm({ onGenerate }: Props) {
                   <FormControl>
                     <textarea
                       {...field}
-                      className="w-full min-h-[100px] bg-black/30 border-purple-500/30 rounded-md p-2 text-purple-200"
+                      className="w-full min-h-[150px] bg-black/30 border-purple-500/30 rounded-md p-2 text-purple-200"
                       placeholder="Customize how image prompts are generated. Use ${prompt} as variable."
                     />
                   </FormControl>
