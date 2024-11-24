@@ -1,11 +1,10 @@
 import { db } from "../../db";
 import { comicGenerations } from "@db/schema";
 import { eq } from "drizzle-orm";
+import { sql } from "drizzle-orm";
 import { scrapeArticle } from "./scraper";
 import { generateSummaryAndPrompts, generateImage } from "./openai";
 import type { ComicGeneration } from "@db/schema";
-import path from "path";
-import * as fs from "fs/promises";
 
 export class ComicService {
   private static async updateGeneration(
@@ -95,13 +94,15 @@ export class ComicService {
     return initialSteps;
   }
 
-  private static async storeImage(imageUrl: string): Promise<{ mime: string; data: string }> {
+  private static async storeImage(
+    imageUrl: string,
+  ): Promise<{ mime: string; data: string }> {
     const response = await fetch(imageUrl);
     const buffer = await response.arrayBuffer();
-    const mime = response.headers.get('content-type') || 'image/png';
+    const mime = response.headers.get("content-type") || "image/png";
     return {
       mime,
-      data: Buffer.from(buffer).toString('base64')
+      data: Buffer.from(buffer).toString("base64"),
     };
   }
 
@@ -268,9 +269,10 @@ export class ComicService {
               const imageData = await this.storeImage(imageUrl);
               const storedImageUrl = `/api/images/${cacheId}/${i}`;
               imageUrls.push(storedImageUrl);
-              await db.update(comicGenerations)
-                .set({ 
-                  imageData: sql`array_append(image_data, ${JSON.stringify(imageData)}::jsonb)`
+              await db
+                .update(comicGenerations)
+                .set({
+                  imageData: sql`array_append(image_data, ${JSON.stringify(imageData)}::jsonb)`,
                 })
                 .where(eq(comicGenerations.cacheId, cacheId));
               await this.updateStep(
