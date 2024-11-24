@@ -44,6 +44,17 @@ export function registerRoutes(app: Express) {
     }
   });
 
+  app.post("/api/comic/:cacheId/regenerate", async (req, res) => {
+    try {
+      const { cacheId } = req.params;
+      await ComicService.regenerateComic(cacheId);
+      res.json({ success: true });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Failed to regenerate comic" });
+    }
+  });
+
   app.get("/api/comic/:cacheId", async (req, res) => {
     try {
       const { cacheId } = req.params;

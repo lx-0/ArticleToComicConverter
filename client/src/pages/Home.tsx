@@ -40,8 +40,18 @@ export default function Home() {
               <ComicResult
                 summary={comicData.summary}
                 imageUrls={comicData.imageUrls}
-                onRegenerate={() => {
-                  // Trigger regeneration
+                onRegenerate={async () => {
+                  try {
+                    await regenerateComic(cacheId);
+                    // Refetch the comic data
+                    await queryClient.invalidateQueries({ queryKey: ["comic", cacheId] });
+                  } catch (error) {
+                    toast({
+                      title: "Error",
+                      description: "Failed to regenerate comic. Please try again.",
+                      variant: "destructive",
+                    });
+                  }
                 }}
               />
             )}
