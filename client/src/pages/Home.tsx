@@ -18,9 +18,11 @@ export default function Home() {
     queryKey: ["comic", cacheId],
     queryFn: () => getComicGeneration(cacheId!),
     enabled: !!cacheId,
-    refetchInterval: (data: ComicGeneration | undefined) => {
+    refetchInterval: (query) => {
+      const data = query.state.data as ComicGeneration;
       // Stop polling when generation is complete or has error
-      if (data?.steps?.every((step: Step) => step.status === "complete" || step.status === "error")) {
+      if (data?.steps && Array.isArray(data.steps) && 
+          data.steps.every(step => step.status === "complete" || step.status === "error")) {
         return false;
       }
       // Poll every 1 second while in progress

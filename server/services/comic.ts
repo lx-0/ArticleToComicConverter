@@ -99,52 +99,129 @@ export class ComicService {
     summaryPrompt?: string,
     imagePrompt?: string,
   ) {
+    const maxRetries = 3;
+
     // Start the chain of promises
     return Promise.resolve()
       .then(async () => {
         // Check cache step
         await this.updateStep(cacheId, "Checking Cache", "in-progress");
+        const existing = await db.query.comicGenerations.findFirst({
+          where: eq(comicGenerations.cacheId, cacheId),
+        });
+        if (existing?.steps?.every(step => step.status === "complete")) {
+          await this.updateStep(cacheId, "Checking Cache", "complete", "Retrieved from cache");
+          return existing; // Return cached result if complete
+        }
         await this.updateStep(cacheId, "Checking Cache", "complete", "Cache check completed");
       })
-      .then(async () => {
+      .then(async (cached) => {
+        if (cached) return cached;
+
         // Validate URL step
         await this.updateStep(cacheId, "Validating URL", "in-progress");
         try {
           new URL(url);
+          const response = await fetch(url, { method: 'HEAD' });
+          const contentType = response.headers.get('content-type');
+          if (!contentType?.includes('text/html')) {
+            throw new Error('URL must point to an HTML page');
+          }
           await this.updateStep(cacheId, "Validating URL", "complete", "URL validated successfully");
-        } catch {
-          throw new Error("Invalid URL provided");
+        } catch (error) {
+          throw new Error(error instanceof Error ? error.message : "Invalid URL provided");
         }
       })
-      .then(async () => {
+      .then(async (cached) => {
+        if (cached) return cached;
+
         // Download and process article content
         await this.updateStep(cacheId, "Downloading Article Content", "in-progress");
         const articleText = await scrapeArticle(url);
+        if (!articleText || articleText.length < 100) {
+          throw new Error('Article content too short or invalid');
+        }
+        const cleanText = articleText.replace(/\s+/g, ' ').trim();
         await this.updateStep(cacheId, "Downloading Article Content", "complete", "Article downloaded and processed");
-        return articleText;
+        return cleanText;
       })
       .then(async (articleText) => {
+        if (typeof articleText !== 'string') return articleText; // Handle cached case
+
         // Generate summary and prompts
         await this.updateStep(cacheId, "Generating Summary", "in-progress");
-        const { summaries, prompts } = await generateSummaryAndPrompts(articleText, numParts, summaryPrompt);
-        await this.updateStep(cacheId, "Generating Summary", "complete", "Generated summaries and prompts");
-        await this.updateGeneration(cacheId, { summary: summaries });
-        return prompts;
+        let attempt = 0;
+        while (attempt < maxRetries) {
+          try {
+            const { summaries, prompts } = await generateSummaryAndPrompts(
+              articleText,
+              numParts,
+              summaryPrompt
+            );
+            if (!summaries.length || !prompts.length) {
+              throw new Error('Invalid summary or prompts generated');
+            }
+            // Validate each summary and prompt
+            summaries.forEach((summary, i) => {
+              if (!summary || summary.length < 10) {
+                throw new Error(`Invalid summary for part ${i + 1}`);
+              }
+            });
+            await this.updateStep(cacheId, "Generating Summary", "complete", "Generated summaries and prompts");
+            await this.updateGeneration(cacheId, { summary: summaries });
+            return prompts;
+          } catch (error) {
+            attempt++;
+            if (attempt === maxRetries) throw error;
+            await this.updateStep(cacheId, "Generating Summary", "in-progress", `Retry attempt ${attempt}/${maxRetries}`);
+          }
+        }
       })
       .then(async (prompts) => {
+        if (!Array.isArray(prompts)) return prompts; // Handle cached case
+
         // Process each part
         const imageUrls: string[] = [];
         for (let i = 0; i < numParts; i++) {
           const partNum = i + 1;
+          let attempt = 0;
           
-          await this.updateStep(cacheId, `Generating Image for Part ${partNum}`, "in-progress");
-          const { url: imageUrl } = await generateImage(prompts[i], imagePrompt);
-          imageUrls.push(imageUrl);
-          await this.updateStep(cacheId, `Generating Image for Part ${partNum}`, "complete", "Generated comic panel");
+          while (attempt < maxRetries) {
+            try {
+              await this.updateStep(cacheId, `Generating Image for Part ${partNum}`, "in-progress");
+              const { url: imageUrl } = await generateImage(prompts[i], imagePrompt);
+              if (!imageUrl) {
+                throw new Error('Invalid image URL received');
+              }
+              
+              // Verify image is accessible
+              const imgResponse = await fetch(imageUrl, { method: 'HEAD' });
+              if (!imgResponse.ok) {
+                throw new Error('Generated image not accessible');
+              }
+              
+              imageUrls.push(imageUrl);
+              await this.updateStep(cacheId, `Generating Image for Part ${partNum}`, "complete", "Generated comic panel");
+              break;
+            } catch (error) {
+              attempt++;
+              if (attempt === maxRetries) throw error;
+              await this.updateStep(
+                cacheId,
+                `Generating Image for Part ${partNum}`,
+                "in-progress",
+                `Retry attempt ${attempt}/${maxRetries}`
+              );
+            }
+          }
         }
         return imageUrls;
       })
-      .then(async (imageUrls) => {
+      .then(async (result) => {
+        // Handle cached case
+        if (result && !Array.isArray(result)) return;
+
+        const imageUrls = result as string[];
         // Finalize
         await this.updateStep(cacheId, "Finalizing Comic", "in-progress");
         await this.updateGeneration(cacheId, { imageUrls });
