@@ -4,6 +4,8 @@ import { eq } from "drizzle-orm";
 import { scrapeArticle } from "./scraper";
 import { generateSummaryAndPrompts, generateImage } from "./openai";
 import type { ComicGeneration } from "@db/schema";
+import path from "path";
+import * as fs from "fs/promises";
 
 export class ComicService {
   private static async updateGeneration(
@@ -91,6 +93,15 @@ export class ComicService {
     });
 
     return initialSteps;
+  }
+
+  private static async downloadAndStoreImage(imageUrl: string, cacheId: string, partNum: number): Promise<string> {
+    const response = await fetch(imageUrl);
+    const buffer = await response.arrayBuffer();
+    const fileName = `${cacheId}-${partNum}.png`;
+    const filePath = path.join(process.cwd(), 'public', 'images', fileName);
+    await fs.writeFile(filePath, Buffer.from(buffer));
+    return `/images/${fileName}`;
   }
 
   static async processComic(
@@ -252,13 +263,9 @@ export class ComicService {
                 throw new Error("Invalid image URL received");
               }
 
-              // Verify image is accessible
-              const imgResponse = await fetch(imageUrl, { method: "HEAD" });
-              if (!imgResponse.ok) {
-                throw new Error("Generated image not accessible");
-              }
-
-              imageUrls.push(imageUrl);
+              // Download and store the image
+              const storedImageUrl = await this.downloadAndStoreImage(imageUrl, cacheId, partNum);
+              imageUrls.push(storedImageUrl);
               await this.updateStep(
                 cacheId,
                 `Generating Image for Part ${partNum}`,
