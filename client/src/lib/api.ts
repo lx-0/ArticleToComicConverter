@@ -26,3 +26,12 @@ export async function getComicGeneration(cacheId: string) {
 
   return response.json();
 }
+
+export async function regenerateComic(cacheId: string): Promise<void> {
+  const response = await fetch(`${API_BASE}/comic/${cacheId}/regenerate`, {
+    method: "POST",
+  });
+  if (!response.ok) {
+    throw new Error("Failed to regenerate comic");
+  }
+}

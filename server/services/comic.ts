@@ -84,6 +84,8 @@ export class ComicService {
     const initialSteps = this.getInitialSteps(numParts);
 
     await db.insert(comicGenerations).values({
+      id: undefined, // Let the database generate this
+      createdAt: undefined, // Let the database generate this
       url,
       numParts,
       cacheId,
@@ -181,13 +183,12 @@ export class ComicService {
       });
 
       if (generation?.steps) {
-        const currentStep = generation.steps.findIndex(
-          (s) => s.status === "in-progress"
-        );
-        if (currentStep !== -1) {
+        const currentStepObj = generation.steps.find(s => s.status === "in-progress");
+        if (currentStepObj) {
           const errorMessage = error instanceof Error ? error.message : String(error);
           await this.updateStep(
-            currentStep,
+            cacheId,
+            currentStepObj.step,
             "error",
             `Error: ${errorMessage}`
           );
@@ -206,13 +207,8 @@ export class ComicService {
       throw new Error("Comic generation not found");
     }
 
-    // Reset steps and results
-    const initialSteps = [
-      {
-        step: this.getStepName(0, generation.numParts),
-        status: "pending" as const,
-      },
-    ];
+    // Reset steps and results using getInitialSteps
+    const initialSteps = this.getInitialSteps(generation.numParts);
 
     await this.updateGeneration(cacheId, {
       steps: initialSteps,
