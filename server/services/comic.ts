@@ -143,7 +143,13 @@ export class ComicService {
           throw new Error('Article content too short or invalid');
         }
         const cleanText = articleText.replace(/\s+/g, ' ').trim();
-        await this.updateStep(cacheId, "Downloading Article Content", "complete", "Article downloaded and processed");
+        await this.updateStep(
+          cacheId,
+          "Downloading Article Content",
+          "complete",
+          "Article downloaded and processed",
+          { type: "text", data: cleanText }
+        );
         return cleanText;
       })
       .then(async (articleText) => {
