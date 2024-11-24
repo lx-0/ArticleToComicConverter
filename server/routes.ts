@@ -67,9 +67,13 @@ export function registerRoutes(app: Express) {
         return res.status(404).json({ error: "Not found" });
       }
 
+      // Only mark as fromCache if the generation is complete
+      const isComplete = generation.steps.every(step => step.status === "complete");
+      
       res.json({
         ...generation,
-        fromCache: true
+        fromCache: isComplete,
+        steps: isComplete ? [] : generation.steps // Only show steps for in-progress generations
       });
     } catch (error) {
       console.error(error);

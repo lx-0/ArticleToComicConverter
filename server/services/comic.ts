@@ -240,14 +240,14 @@ export class ComicService {
       imageUrls: [],
     });
 
-    // Start new processing with the same prompts
+    // Start new processing with the same prompts, handle null values
     setTimeout(() => {
       this.processComic(
         cacheId,
         generation.url,
         generation.numParts,
-        generation.summaryPrompt,
-        generation.imagePrompt
+        generation.summaryPrompt || undefined,
+        generation.imagePrompt || undefined
       ).catch(console.error);
     }, 100);
   }
