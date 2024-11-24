@@ -22,7 +22,7 @@ export default function Home() {
       const data = query.state.data as ComicGeneration;
       // Stop polling when generation is complete or has error
       if (data?.steps && Array.isArray(data.steps) && data.steps.length > 0 && 
-          data.steps.every((step) => 
+          data.steps.every((step: Step) => 
             step.status === "complete" || step.status === "error")) {
         return false;
       }
