@@ -10,7 +10,7 @@ import crypto from "crypto";
 export function registerRoutes(app: Express) {
   app.post("/api/comic", async (req, res) => {
     try {
-      const { url, numParts } = req.body;
+      const { url, numParts, summaryPrompt, imagePrompt } = req.body;
       const cacheId = crypto
         .createHash("md5")
         .update(`${url}-${numParts}`)
@@ -36,7 +36,7 @@ export function registerRoutes(app: Express) {
       });
 
       // Start processing in background
-      processComic(cacheId, url, numParts).catch(console.error);
+      ComicService.processComic(cacheId, url, numParts, summaryPrompt, imagePrompt).catch(console.error);
 
       res.json({ cacheId });
     } catch (error) {

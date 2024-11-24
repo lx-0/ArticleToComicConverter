@@ -17,6 +17,8 @@ import { useToast } from "@/hooks/use-toast";
 const formSchema = z.object({
   url: z.string().url(),
   numParts: z.number().min(1).max(10).default(3),
+  summaryPrompt: z.string().optional(),
+  imagePrompt: z.string().optional(),
 });
 
 type FormSchema = z.infer<typeof formSchema>;
@@ -86,6 +88,40 @@ export function ArticleToComicForm({ onGenerate }: Props) {
                   min={1}
                   max={10}
                   onChange={(e) => field.onChange(Number(e.target.value))}
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="summaryPrompt"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-purple-200">Summary Generation Prompt</FormLabel>
+              <FormControl>
+                <textarea
+                  {...field}
+                  className="w-full min-h-[100px] bg-black/30 border-purple-500/30 rounded-md p-2 text-purple-200"
+                  placeholder="Customize how summaries are generated. Use ${numParts} as variable."
+                />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="imagePrompt"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-purple-200">Image Generation Template</FormLabel>
+              <FormControl>
+                <textarea
+                  {...field}
+                  className="w-full min-h-[100px] bg-black/30 border-purple-500/30 rounded-md p-2 text-purple-200"
+                  placeholder="Customize how image prompts are generated. Use ${prompt} as variable."
                 />
               </FormControl>
             </FormItem>

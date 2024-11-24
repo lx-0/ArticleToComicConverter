@@ -98,7 +98,13 @@ export class ComicService {
     return initialSteps;
   }
 
-  static async processComic(cacheId: string, url: string, numParts: number) {
+  static async processComic(
+    cacheId: string, 
+    url: string, 
+    numParts: number,
+    summaryPrompt?: string,
+    imagePrompt?: string,
+  ) {
     try {
       // Check cache step
       await this.updateStep(cacheId, "Checking Cache", "in-progress");
@@ -148,7 +154,8 @@ export class ComicService {
       await this.updateStep(cacheId, "Generating Summary", "in-progress");
       const { summaries, prompts } = await generateSummaryAndPrompts(
         articleText,
-        numParts
+        numParts,
+        summaryPrompt
       );
       await this.updateStep(cacheId, "Generating Summary", "complete", "Generated summaries and prompts");
 
@@ -172,7 +179,7 @@ export class ComicService {
 
         // Generate image
         await this.updateStep(cacheId, `Generating Image for Part ${partNum}`, "in-progress");
-        const { url: imageUrl } = await generateImage(prompts[i]);
+        const { url: imageUrl } = await generateImage(prompts[i], imagePrompt);
         imageUrls.push(imageUrl);
         await this.updateStep(cacheId, `Generating Image for Part ${partNum}`, "complete", "Generated base image");
 

@@ -6,14 +6,18 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 export async function generateSummaryAndPrompts(
   text: string,
   numParts: number,
+  summaryPrompt?: string,
 ): Promise<{ summaries: string[]; prompts: string[] }> {
+  const defaultPrompt = `You are a comic book artist and storyteller. Break down the given article into ${numParts} parts and create both a summary and an image generation prompt for each part. Generate JSON in this format: { "parts": [{ "summary": "string", "prompt": "string" }] }`;
+  
+  const finalPrompt = summaryPrompt?.replace('${numParts}', String(numParts)) || defaultPrompt;
+
   const response = await openai.chat.completions.create({
     model: "gpt-4o",
     messages: [
       {
         role: "system",
-        content:
-          `You are a comic book artist and storyteller. Break down the given article into ${numParts} parts and create both a summary and an image generation prompt for each part. Generate JSON in this format: { "parts": [{ "summary": "string", "prompt": "string" }] }`,
+        content: finalPrompt,
       },
       {
         role: "user",
@@ -37,10 +41,14 @@ export async function generateSummaryAndPrompts(
 
 export async function generateImage(
   prompt: string,
+  imagePromptTemplate?: string,
 ): Promise<{ url: string }> {
+  const defaultTemplate = 'Create a comic panel style image: ${prompt}';
+  const finalPrompt = (imagePromptTemplate || defaultTemplate).replace('${prompt}', prompt);
+
   const response = await openai.images.generate({
     model: "dall-e-3",
-    prompt: `Create a comic panel style image: ${prompt}`,
+    prompt: finalPrompt,
     n: 1,
     size: "1024x1024",
     quality: "standard",
