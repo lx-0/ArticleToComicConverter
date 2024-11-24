@@ -13,9 +13,30 @@ interface Step {
 
 interface Props {
   steps: Step[];
+  isFromCache?: boolean;
 }
 
-export function ProcessStepper({ steps }: Props) {
+export function ProcessStepper({ steps, isFromCache }: Props) {
+  // If loaded from cache, only show a single completed step
+  if (isFromCache) {
+    return (
+      <div className="space-y-4">
+        <div className="flex items-start p-4 rounded-lg bg-black/30">
+          <div className="mr-4">
+            <Check className="w-5 h-5 text-green-500" />
+          </div>
+          <div className="flex-1">
+            <h3 className="font-medium text-purple-200">Comic Retrieved from Cache</h3>
+            <p className="mt-1 text-sm text-gray-400">
+              Previous generation results loaded successfully
+            </p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Original stepper implementation for new generations
   return (
     <div className="space-y-4">
       {steps.map((step, index) => (

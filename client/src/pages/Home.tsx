@@ -39,7 +39,10 @@ export default function Home() {
 
         {cacheId && (
           <div className="space-y-8">
-            <ProcessStepper steps={comicData?.steps || []} />
+            <ProcessStepper 
+              steps={comicData?.steps || []} 
+              isFromCache={comicData?.fromCache}
+            />
             {comicData?.steps.every(step => step.status === "complete") && (
               <ComicResult
                 summary={comicData.summary}
