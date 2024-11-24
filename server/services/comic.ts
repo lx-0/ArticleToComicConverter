@@ -8,7 +8,7 @@ import type { ComicGeneration } from "@db/schema";
 export class ComicService {
   private static async updateGeneration(
     cacheId: string,
-    updates: Partial<typeof comicGenerations.$inferInsert>
+    updates: Partial<Omit<typeof comicGenerations.$inferInsert, "id">>
   ): Promise<void> {
     await db
       .update(comicGenerations)
@@ -90,9 +90,11 @@ export class ComicService {
       url,
       numParts,
       cacheId,
-      steps: initialSteps,
+      steps: JSON.parse(JSON.stringify(initialSteps)),
       summary: [],
       imageUrls: [],
+      summaryPrompt: undefined,
+      imagePrompt: undefined,
     });
 
     return initialSteps;
@@ -233,7 +235,7 @@ export class ComicService {
     // Reset steps and results
     const initialSteps = this.getInitialSteps(generation.numParts);
     await this.updateGeneration(cacheId, {
-      steps: initialSteps,
+      steps: JSON.parse(JSON.stringify(initialSteps)),
       summary: [],
       imageUrls: [],
     });

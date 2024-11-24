@@ -43,7 +43,7 @@ export default function Home() {
               steps={comicData?.steps || []} 
               isFromCache={comicData?.fromCache}
             />
-            {comicData?.steps.every(step => step.status === "complete") && (
+            {comicData?.steps.every((step: { status: string }) => step.status === "complete") && (
               <ComicResult
                 summary={comicData.summary}
                 imageUrls={comicData.imageUrls}
