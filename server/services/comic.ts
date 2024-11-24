@@ -21,7 +21,7 @@ export class ComicService {
     stepKey: string,
     status: "pending" | "in-progress" | "complete" | "error",
     result?: string,
-    content?: { type: "text" | "image"; data: string }
+    content?: { type: "text" | "image"; data: string },
   ): Promise<ComicGeneration["steps"]> {
     const generation = await db.query.comicGenerations.findFirst({
       where: eq(comicGenerations.cacheId, cacheId),
@@ -110,11 +110,21 @@ export class ComicService {
         const existing = await db.query.comicGenerations.findFirst({
           where: eq(comicGenerations.cacheId, cacheId),
         });
-        if (existing?.steps?.every(step => step.status === "complete")) {
-          await this.updateStep(cacheId, "Checking Cache", "complete", "Retrieved from cache");
+        if (existing?.steps?.every((step) => step.status === "complete")) {
+          await this.updateStep(
+            cacheId,
+            "Checking Cache",
+            "complete",
+            "Retrieved from cache",
+          );
           return existing;
         }
-        await this.updateStep(cacheId, "Checking Cache", "complete", "New generation started");
+        await this.updateStep(
+          cacheId,
+          "Checking Cache",
+          "complete",
+          "New generation started",
+        );
       })
       .then(async (cached) => {
         if (cached) return cached;
@@ -123,50 +133,62 @@ export class ComicService {
         await this.updateStep(cacheId, "Validating URL", "in-progress");
         try {
           new URL(url);
-          const response = await fetch(url, { method: 'HEAD' });
-          const contentType = response.headers.get('content-type');
-          if (!contentType?.includes('text/html')) {
-            throw new Error('URL must point to an HTML page');
+          const response = await fetch(url, { method: "HEAD" });
+          const contentType = response.headers.get("content-type");
+          if (!contentType?.includes("text/html")) {
+            throw new Error("URL must point to an HTML page");
           }
-          await this.updateStep(cacheId, "Validating URL", "complete", "URL validated successfully");
+          await this.updateStep(
+            cacheId,
+            "Validating URL",
+            "complete",
+            "URL validated successfully",
+          );
         } catch (error) {
-          throw new Error(error instanceof Error ? error.message : "Invalid URL provided");
+          throw new Error(
+            error instanceof Error ? error.message : "Invalid URL provided",
+          );
         }
       })
       .then(async (cached) => {
         if (cached) return cached;
 
         // Download and process article content
-        await this.updateStep(cacheId, "Downloading Article Content", "in-progress");
+        await this.updateStep(
+          cacheId,
+          "Downloading Article Content",
+          "in-progress",
+        );
         const articleText = await scrapeArticle(url);
         if (!articleText || articleText.length < 100) {
-          throw new Error('Article content too short or invalid');
+          throw new Error("Article content too short or invalid");
         }
-        const cleanText = articleText.replace(/\s+/g, ' ').trim();
+        const cleanText = articleText.replace(/\s+/g, " ").trim();
         await this.updateStep(
           cacheId,
           "Downloading Article Content",
           "complete",
           "Article downloaded and processed",
-          { type: "text", data: cleanText }
+          { type: "text", data: cleanText },
         );
         return cleanText;
       })
       .then(async (articleText) => {
-        if (typeof articleText !== 'string') return articleText; // Handle cached case
+        if (typeof articleText !== "string") return articleText; // Handle cached case
 
         // Generate summary and prompts
         await this.updateStep(cacheId, "Generating Summary", "in-progress");
         let attempt = 0;
         while (attempt < maxRetries) {
           try {
-            const { title, summaries, prompts } = await generateSummaryAndPrompts(
-              articleText,
-              numParts,
-              summaryPrompt
-            );
+            const { title, summaries, prompts } =
+              await generateSummaryAndPrompts(
+                articleText,
+                numParts,
+                summaryPrompt,
+              );
             if (!summaries.length || !prompts.length) {
-              throw new Error('Invalid summary or prompts generated');
+              throw new Error("Invalid summary or prompts generated");
             }
             // Validate each summary and prompt
             summaries.forEach((summary, i) => {
@@ -179,20 +201,30 @@ export class ComicService {
               "Generating Summary",
               "complete",
               "Generated summaries and prompts",
-              { 
-                type: "text", 
-                data: JSON.stringify({
-                  summaries,
-                  prompts
-                }, null, 2)
-              }
+              {
+                type: "text",
+                data: JSON.stringify(
+                  {
+                    title,
+                    summaries,
+                    prompts,
+                  },
+                  null,
+                  2,
+                ),
+              },
             );
             await this.updateGeneration(cacheId, { title, summary: summaries });
             return prompts;
           } catch (error) {
             attempt++;
             if (attempt === maxRetries) throw error;
-            await this.updateStep(cacheId, "Generating Summary", "in-progress", `Retry attempt ${attempt}/${maxRetries}`);
+            await this.updateStep(
+              cacheId,
+              "Generating Summary",
+              "in-progress",
+              `Retry attempt ${attempt}/${maxRetries}`,
+            );
           }
         }
       })
@@ -204,28 +236,35 @@ export class ComicService {
         for (let i = 0; i < numParts; i++) {
           const partNum = i + 1;
           let attempt = 0;
-          
+
           while (attempt < maxRetries) {
             try {
-              await this.updateStep(cacheId, `Generating Image for Part ${partNum}`, "in-progress");
-              const { url: imageUrl } = await generateImage(prompts[i], imagePrompt);
+              await this.updateStep(
+                cacheId,
+                `Generating Image for Part ${partNum}`,
+                "in-progress",
+              );
+              const { url: imageUrl } = await generateImage(
+                prompts[i],
+                imagePrompt,
+              );
               if (!imageUrl) {
-                throw new Error('Invalid image URL received');
+                throw new Error("Invalid image URL received");
               }
-              
+
               // Verify image is accessible
-              const imgResponse = await fetch(imageUrl, { method: 'HEAD' });
+              const imgResponse = await fetch(imageUrl, { method: "HEAD" });
               if (!imgResponse.ok) {
-                throw new Error('Generated image not accessible');
+                throw new Error("Generated image not accessible");
               }
-              
+
               imageUrls.push(imageUrl);
               await this.updateStep(
                 cacheId,
                 `Generating Image for Part ${partNum}`,
                 "complete",
                 "Generated comic panel",
-                { type: "image", data: imageUrl }
+                { type: "image", data: imageUrl },
               );
               break;
             } catch (error) {
@@ -235,7 +274,7 @@ export class ComicService {
                 cacheId,
                 `Generating Image for Part ${partNum}`,
                 "in-progress",
-                `Retry attempt ${attempt}/${maxRetries}`
+                `Retry attempt ${attempt}/${maxRetries}`,
               );
             }
           }
@@ -250,7 +289,12 @@ export class ComicService {
         // Finalize
         await this.updateStep(cacheId, "Finalizing Comic", "in-progress");
         await this.updateGeneration(cacheId, { imageUrls });
-        await this.updateStep(cacheId, "Finalizing Comic", "complete", "Comic generation completed");
+        await this.updateStep(
+          cacheId,
+          "Finalizing Comic",
+          "complete",
+          "Comic generation completed",
+        );
       })
       .catch(async (error: unknown) => {
         console.error("Error processing comic:", error);
@@ -259,10 +303,18 @@ export class ComicService {
         });
 
         if (generation?.steps) {
-          const currentStepObj = generation.steps.find(s => s.status === "in-progress");
+          const currentStepObj = generation.steps.find(
+            (s) => s.status === "in-progress",
+          );
           if (currentStepObj) {
-            const errorMessage = error instanceof Error ? error.message : String(error);
-            await this.updateStep(cacheId, currentStepObj.step, "error", `Error: ${errorMessage}`);
+            const errorMessage =
+              error instanceof Error ? error.message : String(error);
+            await this.updateStep(
+              cacheId,
+              currentStepObj.step,
+              "error",
+              `Error: ${errorMessage}`,
+            );
           }
         }
         throw error;
@@ -294,7 +346,7 @@ export class ComicService {
           generation.url,
           generation.numParts,
           generation.summaryPrompt || undefined,
-          generation.imagePrompt || undefined
+          generation.imagePrompt || undefined,
         );
       })
       .catch(console.error);
