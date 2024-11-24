@@ -3,6 +3,7 @@ import { ProcessStepper } from "@/components/ProcessStepper";
 import { ComicResult } from "@/components/ComicResult";
 import { RecentComics } from "@/components/RecentComics";
 import { useState, useEffect } from "react";
+import { Footer } from "@/components/Footer";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { regenerateComic } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
@@ -63,7 +64,7 @@ export default function Home() {
   }, [cacheId, comicData?.steps]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-purple-950 to-black text-white p-6">
+    <div className="min-h-screen bg-gradient-to-b from-black via-purple-950 to-black text-white p-6 flex flex-col">
       <div className="max-w-4xl mx-auto space-y-8">
         <header className="text-center space-y-4">
           <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-pink-400">
@@ -165,6 +166,7 @@ export default function Home() {
         )}
         {!cacheId && <RecentComics />}
       </div>
+      <Footer />
     </div>
   );
 }

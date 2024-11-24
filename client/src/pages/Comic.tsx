@@ -3,6 +3,7 @@ import { useParams } from "wouter";
 import { getComicGeneration } from "@/lib/api";
 import { ComicResult } from "@/components/ComicResult";
 import type { Step } from "@db/schema";
+import { Footer } from "@/components/Footer";
 
 export default function Comic() {
   const { cacheId } = useParams();
@@ -17,7 +18,7 @@ export default function Comic() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-purple-950 to-black text-white p-6">
+    <div className="min-h-screen bg-gradient-to-b from-black via-purple-950 to-black text-white p-6 flex flex-col">
       <div className="max-w-4xl mx-auto">
         <ComicResult
           title={comicData.title || "Untitled Comic"}
@@ -27,6 +28,7 @@ export default function Comic() {
           standalone
         />
       </div>
+      <Footer />
     </div>
   );
 }
