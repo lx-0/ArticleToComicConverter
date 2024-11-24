@@ -50,6 +50,17 @@ export function ArticleToComicForm({ onGenerate }: Props) {
       imagePrompt: "", // Will be filled by useEffect
     },
   });
+  useEffect(() => {
+    fetch('/api/prompts/defaults')
+      .then(response => response.json())
+      .then(prompts => {
+        form.setValue('summaryPrompt', prompts.summary);
+        form.setValue('imagePrompt', prompts.image);
+      })
+      .catch(error => {
+        console.error('Failed to fetch default prompts:', error);
+      });
+  }, []); // Empty dependency array means this runs once when component mounts
 
   const mutation = useMutation({
     mutationFn: generateComic,

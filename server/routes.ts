@@ -7,6 +7,7 @@ import { scrapeArticle } from "./services/scraper";
 import { generateSummaryAndPrompts, generateImage } from "./services/openai";
 import { ComicService } from "./services/comic";
 import crypto from "crypto";
+import { Request, Response } from 'express';
 
 export function registerRoutes(app: Express) {
   app.post("/api/comic", async (req, res) => {
