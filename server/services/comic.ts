@@ -272,7 +272,13 @@ export class ComicService {
               await db
                 .update(comicGenerations)
                 .set({
-                  imageData: sql`array_append(image_data, ${JSON.stringify(imageData)}::jsonb)`,
+                  imageData: sql`
+                    CASE 
+                      WHEN image_data IS NULL OR image_data = '[]'::jsonb 
+                      THEN jsonb_build_array(${JSON.stringify(imageData)}::jsonb)
+                      ELSE image_data || jsonb_build_array(${JSON.stringify(imageData)}::jsonb)
+                    END
+                  `
                 })
                 .where(eq(comicGenerations.cacheId, cacheId));
               await this.updateStep(
