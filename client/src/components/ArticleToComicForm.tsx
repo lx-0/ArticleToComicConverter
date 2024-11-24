@@ -13,7 +13,7 @@ import { useEffect } from "react";
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation } from "@tanstack/react-query";
-import { generateComic } from "@/lib/api";
+import { generateComic, getDefaultPrompts } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import {
   Collapsible,
@@ -47,8 +47,7 @@ export function ArticleToComicForm({ onGenerate }: Props) {
     },
   });
   useEffect(() => {
-    fetch("/api/prompts/defaults")
-      .then((response) => response.json())
+    getDefaultPrompts()
       .then((prompts) => {
         form.setValue("summaryPrompt", prompts.summary);
         form.setValue("imagePrompt", prompts.image);
