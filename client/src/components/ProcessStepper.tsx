@@ -53,7 +53,7 @@ export function ProcessStepper({ steps, isFromCache }: Props) {
           <span>{completedSteps} of {steps.length} steps completed</span>
           <span>{Math.round(progress)}%</span>
         </div>
-        <Progress value={progress} className="bg-black/30 h-2" indicatorClassName="bg-purple-500" />
+        <Progress value={progress} className="bg-black/30 h-2" />
       </div>
       {steps.map((step, index) => (
         <Collapsible key={index}>
@@ -87,33 +87,31 @@ export function ProcessStepper({ steps, isFromCache }: Props) {
                 {step.result && (
                   <p className="mt-1 text-sm text-gray-400">{step.result}</p>
                 )}
+                {step.content && (
+                  <CollapsibleContent className="mt-4">
+                    {step.content.type === "text" && (
+                      <div className="bg-black/20 p-3 rounded-md text-sm font-mono text-purple-200">
+                        {typeof step.content.data === 'string' ? (
+                          step.content.data
+                        ) : (
+                          <pre>{JSON.stringify(step.content.data, null, 2)}</pre>
+                        )}
+                      </div>
+                    )}
+                    {step.content.type === "image" && (
+                      <div className="mt-2">
+                        <img 
+                          src={step.content.data} 
+                          alt="Step result"
+                          className="rounded-md max-h-48 object-cover"
+                        />
+                      </div>
+                    )}
+                  </CollapsibleContent>
+                )}
               </div>
             </div>
           </CollapsibleTrigger>
-          {step.content && (
-            <CollapsibleContent>
-              <div className="mt-4">
-                {step.content.type === "text" && (
-                  <div className="bg-black/20 p-3 rounded-md text-sm font-mono text-purple-200">
-                    {typeof step.content.data === 'string' ? (
-                      step.content.data
-                    ) : (
-                      <pre>{JSON.stringify(step.content.data, null, 2)}</pre>
-                    )}
-                  </div>
-                )}
-                {step.content.type === "image" && (
-                  <div className="mt-2">
-                    <img 
-                      src={step.content.data} 
-                      alt="Step result"
-                      className="rounded-md max-h-48 object-cover"
-                    />
-                  </div>
-                )}
-              </div>
-            </CollapsibleContent>
-          )}
         </Collapsible>
       ))}
     </div>

@@ -21,9 +21,9 @@ export default function Home() {
     refetchInterval: (query) => {
       const data = query.state.data as ComicGeneration;
       // Stop polling when generation is complete or has error
-      if (data?.steps && Array.isArray(data.steps) && 
-          data.steps.every((step: Step) => 
-            step && (step.status === "complete" || step.status === "error"))) {
+      if (data?.steps && Array.isArray(data.steps) && data.steps.length > 0 && 
+          data.steps.every((step) => 
+            step.status === "complete" || step.status === "error")) {
         return false;
       }
       // Poll every 1 second while in progress
@@ -57,6 +57,7 @@ export default function Home() {
             />
             {comicData?.steps.every((step: { status: string }) => step.status === "complete") && (
               <ComicResult
+                title={comicData.title || "Untitled Comic"}
                 summary={comicData.summary}
                 imageUrls={comicData.imageUrls}
                 isFromCache={comicData.fromCache}

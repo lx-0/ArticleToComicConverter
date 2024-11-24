@@ -160,7 +160,7 @@ export class ComicService {
         let attempt = 0;
         while (attempt < maxRetries) {
           try {
-            const { summaries, prompts } = await generateSummaryAndPrompts(
+            const { title, summaries, prompts } = await generateSummaryAndPrompts(
               articleText,
               numParts,
               summaryPrompt
@@ -187,7 +187,7 @@ export class ComicService {
                 }, null, 2)
               }
             );
-            await this.updateGeneration(cacheId, { summary: summaries });
+            await this.updateGeneration(cacheId, { title, summary: summaries });
             return prompts;
           } catch (error) {
             attempt++;

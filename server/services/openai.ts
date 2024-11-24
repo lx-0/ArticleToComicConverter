@@ -8,7 +8,7 @@ export async function generateSummaryAndPrompts(
   text: string,
   numParts: number,
   summaryPrompt?: string,
-): Promise<{ summaries: string[]; prompts: string[] }> {
+): Promise<{ title: string; summaries: string[]; prompts: string[] }> {
   const finalPrompt = summaryPrompt?.replace('${numParts}', String(numParts)) || 
     DEFAULT_PROMPTS.summary.replace('${numParts}', String(numParts));
 
@@ -34,6 +34,7 @@ export async function generateSummaryAndPrompts(
   
   const result = JSON.parse(content);
   return {
+    title: result.title || "Untitled Comic",
     summaries: result.parts.map((p: any) => p.summary),
     prompts: result.parts.map((p: any) => p.prompt),
   };

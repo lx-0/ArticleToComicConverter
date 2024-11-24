@@ -19,6 +19,7 @@ export const comicGenerations = pgTable("comic_generations", {
   url: text("url").notNull(),
   numParts: integer("num_parts").notNull(),
   cacheId: text("cache_id").unique().notNull(),
+  title: text("title").default(""),
   steps: jsonb("steps").$type<z.infer<typeof Step>[]>().default([]),
   summary: jsonb("summary").$type<string[]>().default([]),
   imageUrls: jsonb("image_urls").$type<string[]>().default([]),
