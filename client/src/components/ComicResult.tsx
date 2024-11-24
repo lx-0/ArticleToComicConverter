@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { RefreshCw, Share, ChevronLeft, ChevronRight } from "lucide-react";
+import { RefreshCw, Share, ChevronLeft, ChevronRight, Plus } from "lucide-react";
 import { useState } from "react";
 
 interface Props {
@@ -34,23 +34,33 @@ export function ComicResult({ title, summary, imageUrls, onRegenerate, isFromCac
           )}
         </div>
         <div className="flex gap-2">
-          {!standalone && (
+          <Button
+            onClick={() => {
+              const url = `${window.location.origin}/comic/${cacheId}`;
+              navigator.clipboard.writeText(url);
+              toast({
+                title: "Link copied!",
+                description: "Share this link to show your comic to others.",
+              });
+            }}
+            variant="outline"
+            className="border-purple-500/30"
+          >
+            <Share className="w-4 h-4 mr-2" />
+            Share
+          </Button>
+          
+          {standalone && (
             <Button
-              onClick={() => {
-                const url = `${window.location.origin}/comic/${cacheId}`;
-                navigator.clipboard.writeText(url);
-                toast({
-                  title: "Link copied!",
-                  description: "Share this link to show your comic to others.",
-                });
-              }}
+              onClick={() => window.location.href = '/'}
               variant="outline"
               className="border-purple-500/30"
             >
-              <Share className="w-4 h-4 mr-2" />
-              Share
+              <Plus className="w-4 h-4 mr-2" />
+              Create New Comic
             </Button>
           )}
+          
           {onRegenerate && (
             <Button
               onClick={onRegenerate}
