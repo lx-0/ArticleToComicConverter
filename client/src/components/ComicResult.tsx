@@ -1,0 +1,49 @@
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { RefreshCw } from "lucide-react";
+
+interface Props {
+  summary: string[];
+  imageUrls: string[];
+  onRegenerate: () => void;
+}
+
+export function ComicResult({ summary, imageUrls, onRegenerate }: Props) {
+  return (
+    <div className="space-y-8">
+      <div className="flex justify-between items-center">
+        <h2 className="text-2xl font-bold text-purple-200">Your Comic Story</h2>
+        <Button
+          onClick={onRegenerate}
+          variant="outline"
+          className="border-purple-500/30"
+        >
+          <RefreshCw className="w-4 h-4 mr-2" />
+          Regenerate
+        </Button>
+      </div>
+
+      <div className="grid gap-8">
+        {summary.map((text, index) => (
+          <Card
+            key={index}
+            className="bg-black/50 border-purple-500/30 overflow-hidden"
+          >
+            <div className="grid md:grid-cols-2 gap-4 p-6">
+              <div className="space-y-4">
+                <p className="text-purple-200">{text}</p>
+              </div>
+              <div className="relative aspect-square">
+                <img
+                  src={imageUrls[index]}
+                  alt={`Comic panel ${index + 1}`}
+                  className="rounded-lg object-cover w-full h-full"
+                />
+              </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </div>
+  );
+}
