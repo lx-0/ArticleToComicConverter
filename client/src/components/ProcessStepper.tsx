@@ -75,7 +75,11 @@ export function ProcessStepper({ steps, isFromCache }: Props) {
               <div className="mt-4">
                 {step.content.type === "text" && (
                   <div className="bg-black/20 p-3 rounded-md text-sm font-mono text-purple-200">
-                    {step.content.data}
+                    {typeof step.content.data === 'string' ? (
+                      step.content.data
+                    ) : (
+                      <pre>{JSON.stringify(step.content.data, null, 2)}</pre>
+                    )}
                   </div>
                 )}
                 {step.content.type === "image" && (

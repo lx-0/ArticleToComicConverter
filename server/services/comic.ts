@@ -179,7 +179,13 @@ export class ComicService {
               "Generating Summary",
               "complete",
               "Generated summaries and prompts",
-              { type: "text", data: JSON.stringify(summaries, null, 2) }
+              { 
+                type: "text", 
+                data: JSON.stringify({
+                  summaries,
+                  prompts
+                }, null, 2)
+              }
             );
             await this.updateGeneration(cacheId, { summary: summaries });
             return prompts;
