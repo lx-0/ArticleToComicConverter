@@ -1,7 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { RefreshCw, X, ChevronLeft, ChevronRight } from "lucide-react";
+import { RefreshCw, Share, ChevronLeft, ChevronRight } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import { useState } from "react";
 
 interface Props {
@@ -29,14 +30,35 @@ export function ComicResult({ title, summary, imageUrls, onRegenerate, isFromCac
             </p>
           )}
         </div>
-        <Button
-          onClick={onRegenerate}
-          variant="outline"
-          className="border-purple-500/30"
-        >
-          <RefreshCw className="w-4 h-4 mr-2" />
-          Regenerate
-        </Button>
+        <div className="flex gap-2">
+          {!standalone && (
+            <Button
+              onClick={() => {
+                const url = `${window.location.origin}/comic/${cacheId}`;
+                navigator.clipboard.writeText(url);
+                toast({
+                  title: "Link copied!",
+                  description: "Share this link to show your comic to others.",
+                });
+              }}
+              variant="outline"
+              className="border-purple-500/30"
+            >
+              <Share className="w-4 h-4 mr-2" />
+              Share
+            </Button>
+          )}
+          {onRegenerate && (
+            <Button
+              onClick={onRegenerate}
+              variant="outline"
+              className="border-purple-500/30"
+            >
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Regenerate
+            </Button>
+          )}
+        </div>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
