@@ -36,7 +36,7 @@ interface Props {
   isGenerating?: boolean;
 }
 
-export function ArticleToComicForm({ onGenerate }: Props) {
+export function ArticleToComicForm({ onGenerate, isGenerating }: Props) {
   const { toast } = useToast();
   const form = useForm<FormSchema>({
     resolver: zodResolver(formSchema),
