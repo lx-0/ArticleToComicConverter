@@ -112,9 +112,9 @@ export class ComicService {
         });
         if (existing?.steps?.every(step => step.status === "complete")) {
           await this.updateStep(cacheId, "Checking Cache", "complete", "Retrieved from cache");
-          return existing; // Return cached result if complete
+          return existing;
         }
-        await this.updateStep(cacheId, "Checking Cache", "complete", "Cache check completed");
+        await this.updateStep(cacheId, "Checking Cache", "complete", "New generation started");
       })
       .then(async (cached) => {
         if (cached) return cached;

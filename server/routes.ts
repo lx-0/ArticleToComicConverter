@@ -68,14 +68,16 @@ export function registerRoutes(app: Express) {
         return res.status(404).json({ error: "Not found" });
       }
 
-      // Only mark as fromCache if the generation is complete
       const steps = generation.steps || [];
       const isComplete = steps.every((step) => step.status === "complete");
+      
+      // Only mark as fromCache if it was loaded from cache in the initial request
+      const fromCache = isComplete && steps[0]?.result === "Retrieved from cache";
 
       res.json({
         ...generation,
-        fromCache: isComplete,
-        steps: isComplete ? [] : steps, // Only show steps for in-progress generations
+        fromCache,
+        steps: isComplete ? [] : steps,
       });
     } catch (error) {
       console.error(error);
