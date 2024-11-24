@@ -76,7 +76,7 @@ export function registerRoutes(app: Express) {
     }
   });
 // Add endpoint to get default prompts
-  app.get("/api/prompts/defaults", (req: Request, res: Response) => {
+  app.get("/api/prompts/defaults", (_req: Request, res: Response) => {
     res.json(DEFAULT_PROMPTS);
   });
 }
