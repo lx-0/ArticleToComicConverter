@@ -84,8 +84,6 @@ export class ComicService {
     const initialSteps = this.getInitialSteps(numParts);
 
     await db.insert(comicGenerations).values({
-      id: undefined, // Let the database generate this
-      createdAt: undefined, // Let the database generate this
       url,
       numParts,
       cacheId,

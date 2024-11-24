@@ -2,12 +2,16 @@ import { ArticleToComicForm } from "@/components/ArticleToComicForm";
 import { ProcessStepper } from "@/components/ProcessStepper";
 import { ComicResult } from "@/components/ComicResult";
 import { useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { regenerateComic } from "@/lib/api";
+import { useToast } from "@/hooks/use-toast";
 import { getComicGeneration } from "@/lib/api";
 import { Card, CardContent } from "@/components/ui/card";
 
 export default function Home() {
   const [cacheId, setCacheId] = useState<string | null>(null);
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   const { data: comicData, isLoading } = useQuery({
     queryKey: ["comic", cacheId],
@@ -40,10 +44,10 @@ export default function Home() {
               <ComicResult
                 summary={comicData.summary}
                 imageUrls={comicData.imageUrls}
+                isFromCache={comicData.fromCache}
                 onRegenerate={async () => {
                   try {
                     await regenerateComic(cacheId);
-                    // Refetch the comic data
                     await queryClient.invalidateQueries({ queryKey: ["comic", cacheId] });
                   } catch (error) {
                     toast({
