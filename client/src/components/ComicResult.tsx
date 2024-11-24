@@ -1,7 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { RefreshCw, X } from "lucide-react";
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { RefreshCw, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
 
 interface Props {
@@ -14,6 +14,7 @@ interface Props {
 
 export function ComicResult({ title, summary, imageUrls, onRegenerate, isFromCache }: Props) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const currentIndex = imageUrls.findIndex(url => url === selectedImage);
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center">
@@ -71,12 +72,40 @@ export function ComicResult({ title, summary, imageUrls, onRegenerate, isFromCac
           >
             <X className="h-4 w-4" />
           </Button>
-          <div className="relative w-full h-full flex items-center justify-center mt-6">
+          <DialogHeader className="mb-4">
+            <DialogTitle className="text-xl font-bold text-purple-200">{title}</DialogTitle>
+          </DialogHeader>
+          <div className="relative w-full h-full flex flex-col items-center justify-center gap-4">
             <img
               src={selectedImage || ''}
               alt="Full size comic panel"
-              className="max-w-full max-h-[80vh] object-contain rounded-lg"
+              className="max-w-full max-h-[70vh] object-contain rounded-lg"
             />
+            {selectedImage && (
+              <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 flex justify-between px-4">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-purple-200 hover:text-purple-100 hover:bg-purple-500/20"
+                  onClick={() => setSelectedImage(imageUrls[currentIndex - 1])}
+                  disabled={currentIndex === 0}
+                >
+                  <ChevronLeft className="h-6 w-6" />
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="text-purple-200 hover:text-purple-100 hover:bg-purple-500/20"
+                  onClick={() => setSelectedImage(imageUrls[currentIndex + 1])}
+                  disabled={currentIndex === imageUrls.length - 1}
+                >
+                  <ChevronRight className="h-6 w-6" />
+                </Button>
+              </div>
+            )}
+            <p className="text-purple-200 text-sm max-w-prose">
+              {summary[currentIndex]}
+            </p>
           </div>
         </DialogContent>
       </Dialog>
