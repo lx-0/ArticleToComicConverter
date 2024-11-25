@@ -15,10 +15,10 @@ export default function Comic() {
 
   if (!comicData?.steps?.every((step: Step) => step.status === "complete")) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-black via-purple-950 to-black text-white p-6 flex flex-col">
-        <div className="flex-1 flex items-center justify-center">
-          <div className="space-y-4 text-center">
-            <div className="animate-spin w-12 h-12 border-4 border-purple-500/30 border-t-purple-500 rounded-full" />
+      <div className="min-h-screen bg-gradient-to-b from-black via-purple-950 to-black text-white p-6">
+        <div className="h-full flex items-center justify-center">
+          <div className="w-full max-w-md mx-auto text-center space-y-4">
+            <div className="mx-auto w-12 h-12 animate-spin border-4 border-purple-500/30 border-t-purple-500 rounded-full" />
             <h2 className="text-xl font-bold text-purple-200">Loading Comic</h2>
             <p className="text-sm text-purple-400">Please wait while we fetch your comic...</p>
           </div>
