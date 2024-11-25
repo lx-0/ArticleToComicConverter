@@ -31,32 +31,30 @@ export default function Comic() {
       : undefined;
 
     return (
-      <div className="min-h-screen bg-gradient-to-b from-black via-purple-950 to-black text-white px-4 sm:px-6 py-6">
-        <div className="h-full flex items-center justify-center">
-          <div className="w-full max-w-md mx-auto text-center space-y-4">
-            <div className="mx-auto w-12 h-12 animate-spin border-4 border-purple-500/30 border-t-purple-500 rounded-full" />
-            <h2 className="text-xl font-bold text-purple-200">
-              {errorStep ? "Generation Error" : "Loading Comic"}
-            </h2>
-            <p className="text-sm text-purple-400">
-              {errorStep ? (
-                <span className="text-red-400">{errorStep.result}</span>
-              ) : inProgressStep ? (
-                `Currently ${inProgressStep.step.toLowerCase()}...`
-              ) : (
-                "Please wait while we fetch your comic..."
-              )}
-            </p>
-            {errorStep && (
-              <Button
-                onClick={() => navigate("/")}
-                variant="outline"
-                className="border-purple-500/30 mt-4"
-              >
-                Back to Home
-              </Button>
+      <div className="min-h-screen bg-gradient-to-b from-black via-purple-950 to-black text-white px-4 sm:px-6 py-6 flex items-center justify-center">
+        <div className="w-full max-w-md mx-auto text-center space-y-4">
+          <div className="mx-auto w-12 h-12 animate-spin border-4 border-purple-500/30 border-t-purple-500 rounded-full" />
+          <h2 className="text-xl font-bold text-purple-200">
+            {errorStep ? "Generation Error" : "Loading Comic"}
+          </h2>
+          <p className="text-sm text-purple-400">
+            {errorStep ? (
+              <span className="text-red-400">{errorStep.result}</span>
+            ) : inProgressStep ? (
+              `Currently ${inProgressStep.step.toLowerCase()}...`
+            ) : (
+              "Please wait while we fetch your comic..."
             )}
-          </div>
+          </p>
+          {errorStep && (
+            <Button
+              onClick={() => navigate("/")}
+              variant="outline"
+              className="border-purple-500/30 mt-4"
+            >
+              Back to Home
+            </Button>
+          )}
         </div>
       </div>
     );

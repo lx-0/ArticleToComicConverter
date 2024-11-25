@@ -7,10 +7,14 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 export async function generateSummaryAndPrompts(
   text: string,
   numParts: number,
+  language: string = "English",
   summaryPrompt?: string,
 ): Promise<{ title: string; summaries: string[]; prompts: string[] }> {
-  const finalPrompt = summaryPrompt?.replace('${numParts}', String(numParts)) || 
-    DEFAULT_PROMPTS.summary.replace('${numParts}', String(numParts));
+  const finalPrompt = summaryPrompt?.replace('${numParts}', String(numParts))
+    .replace('${language}', language) || 
+    DEFAULT_PROMPTS.summary
+      .replace('${numParts}', String(numParts))
+      .replace('${language}', language);
 
   const response = await openai.chat.completions.create({
     model: "gpt-4o",
