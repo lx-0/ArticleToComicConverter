@@ -140,15 +140,6 @@ export function ComicResult({
         </div>
         <div className="flex gap-2">
           <Button
-            onClick={() => (window.location.href = "/")}
-            variant="outline"
-            className="border-purple-500/30"
-          >
-            <ChevronLeft className="w-4 h-4 mr-2" />
-            Back to Home
-          </Button>
-
-          <Button
             onClick={() => {
               const url = `${window.location.origin}/comic/${cacheId}`;
               navigator.clipboard.writeText(url);
