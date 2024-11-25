@@ -2,7 +2,8 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Card } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { RefreshCw, Share, ChevronLeft, ChevronRight, Plus } from "lucide-react";
+import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/components/ui/hover-card";
+import { RefreshCw, Share, ChevronLeft, ChevronRight, Plus, Wand, PencilRuler } from "lucide-react";
 import { useState } from "react";
 
 interface Props {
@@ -15,11 +16,14 @@ interface Props {
   cacheId?: string;
   url?: string;
   createdAt?: string | Date;
+  summaryPrompt?: string;
+  imagePrompt?: string;
 }
 
-export function ComicResult({ title, summary, imageUrls, onRegenerate, isFromCache, standalone, cacheId, url, createdAt }: Props) {
+export function ComicResult({ title, summary, imageUrls, onRegenerate, isFromCache, standalone, cacheId, url, createdAt, summaryPrompt, imagePrompt }: Props) {
   const { toast } = useToast();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
+  const [selectedPrompt, setSelectedPrompt] = useState<{ title: string; content: string } | null>(null);
   const currentIndex = imageUrls.findIndex(url => url === selectedImage);
   return (
     <div className="space-y-8">
@@ -43,6 +47,46 @@ export function ComicResult({ title, summary, imageUrls, onRegenerate, isFromCac
               </div>
             )}
             <p className="text-sm text-purple-400">Your Comic Story</p>
+            <div className="flex items-center gap-2 mt-1">
+              {summaryPrompt && (
+                <>
+                  <HoverCard>
+                    <HoverCardTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={() => setSelectedPrompt({ title: "Summary Prompt", content: summaryPrompt })}
+                      >
+                        <PencilRuler className="h-4 w-4 text-purple-400" />
+                      </Button>
+                    </HoverCardTrigger>
+                    <HoverCardContent className="w-80 bg-black/95 border-purple-500/30">
+                      <p className="text-sm text-purple-200">Summary Generation Prompt</p>
+                    </HoverCardContent>
+                  </HoverCard>
+                </>
+              )}
+              {imagePrompt && (
+                <>
+                  <HoverCard>
+                    <HoverCardTrigger asChild>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        className="h-8 w-8"
+                        onClick={() => setSelectedPrompt({ title: "Image Prompt", content: imagePrompt })}
+                      >
+                        <Wand className="h-4 w-4 text-purple-400" />
+                      </Button>
+                    </HoverCardTrigger>
+                    <HoverCardContent className="w-80 bg-black/95 border-purple-500/30">
+                      <p className="text-sm text-purple-200">Image Generation Prompt</p>
+                    </HoverCardContent>
+                  </HoverCard>
+                </>
+              )}
+            </div>
           </div>
           {isFromCache && (
             <p className="text-sm text-purple-400 mt-1">
@@ -151,6 +195,21 @@ export function ComicResult({ title, summary, imageUrls, onRegenerate, isFromCac
             </div>
             <p className="text-purple-200 text-sm max-w-prose">
               {summary[currentIndex]}
+            </p>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={!!selectedPrompt} onOpenChange={() => setSelectedPrompt(null)}>
+        <DialogContent className="max-w-2xl bg-black/95 border-purple-500/30">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-purple-200">
+              {selectedPrompt?.title}
+            </DialogTitle>
+          </DialogHeader>
+          <div className="mt-4">
+            <p className="text-sm text-purple-200 font-mono whitespace-pre-wrap">
+              {selectedPrompt?.content}
             </p>
           </div>
         </DialogContent>

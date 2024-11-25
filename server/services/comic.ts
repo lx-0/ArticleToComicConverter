@@ -77,6 +77,8 @@ export class ComicService {
     url: string,
     numParts: number,
     cacheId: string,
+    summaryPrompt: string,
+    imagePrompt: string,
   ) {
     const initialSteps = ComicService.getInitialSteps(numParts);
 
@@ -87,8 +89,8 @@ export class ComicService {
       steps: JSON.parse(JSON.stringify(initialSteps)),
       summary: [],
       imageUrls: [],
-      summaryPrompt: undefined,
-      imagePrompt: undefined,
+      summaryPrompt,
+      imagePrompt,
     });
 
     return initialSteps;
@@ -278,7 +280,7 @@ export class ComicService {
                       THEN jsonb_build_array(${JSON.stringify(imageData)}::jsonb)
                       ELSE image_data || jsonb_build_array(${JSON.stringify(imageData)}::jsonb)
                     END
-                  `
+                  `,
                 })
                 .where(eq(comicGenerations.cacheId, cacheId));
               await this.updateStep(

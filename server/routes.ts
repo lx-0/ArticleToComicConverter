@@ -1,5 +1,5 @@
 import type { Express, Request, Response } from "express";
-import { eq } from "drizzle-orm";
+import { eq, desc } from "drizzle-orm";
 import { db } from "db";
 import { comicGenerations } from "@db/schema";
 import { DEFAULT_PROMPTS } from "./constants";
@@ -28,7 +28,13 @@ export function registerRoutes(app: Express) {
       }
 
       // Create new generation
-      await ComicService.initializeGeneration(url, numParts, cacheId);
+      await ComicService.initializeGeneration(
+        url,
+        numParts,
+        cacheId,
+        summaryPrompt,
+        imagePrompt,
+      );
 
       // Start processing in background
       ComicService.processComic(
@@ -105,7 +111,7 @@ export function registerRoutes(app: Express) {
         .from(comicGenerations)
         .orderBy(desc(comicGenerations.createdAt))
         .limit(10);
-      
+
       res.json(recentComics);
     } catch (error) {
       console.error(error);
@@ -118,20 +124,20 @@ export function registerRoutes(app: Express) {
     try {
       const { cacheId, index } = req.params;
       const comic = await db.query.comicGenerations.findFirst({
-        where: eq(comicGenerations.cacheId, cacheId)
+        where: eq(comicGenerations.cacheId, cacheId),
       });
-      
+
       if (!comic?.imageData?.[Number(index)]) {
-        return res.status(404).send('Image not found');
+        return res.status(404).send("Image not found");
       }
 
       const { mime, data } = comic.imageData[Number(index)];
-      const buffer = Buffer.from(data, 'base64');
-      res.setHeader('Content-Type', mime);
+      const buffer = Buffer.from(data, "base64");
+      res.setHeader("Content-Type", mime);
       res.send(buffer);
     } catch (error) {
       console.error(error);
-      res.status(500).send('Error fetching image');
+      res.status(500).send("Error fetching image");
     }
   });
 }
