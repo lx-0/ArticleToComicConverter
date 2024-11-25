@@ -85,60 +85,62 @@ export function ComicResult({
               </div>
             )}
             {/* <p className="text-sm text-purple-400">Your Comic Story</p> */}
-            <div className="flex items-center gap-2 mt-1">
-              {summaryPrompt && (
-                <>
-                  <HoverCard>
-                    <HoverCardTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={() =>
-                          setSelectedPrompt({
-                            title: "Summary Prompt",
-                            content: summaryPrompt,
-                          })
-                        }
-                      >
-                        <PencilRuler className="h-4 w-4 text-purple-400" />
-                      </Button>
-                    </HoverCardTrigger>
-                    <HoverCardContent className="w-80 bg-black/95 border-purple-500/30">
-                      <p className="text-sm text-purple-200 font-mono whitespace-pre-wrap line-clamp-4">
-                        {summaryPrompt}
-                      </p>
-                    </HoverCardContent>
-                  </HoverCard>
-                </>
-              )}
-              {imagePrompt && (
-                <>
-                  <HoverCard>
-                    <HoverCardTrigger asChild>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-8 w-8"
-                        onClick={() =>
-                          setSelectedPrompt({
-                            title: "Image Prompt",
-                            content: imagePrompt,
-                          })
-                        }
-                      >
-                        <Wand className="h-4 w-4 text-purple-400" />
-                      </Button>
-                    </HoverCardTrigger>
-                    <HoverCardContent className="w-80 bg-black/95 border-purple-500/30">
-                      <p className="text-sm text-purple-200 font-mono whitespace-pre-wrap line-clamp-4">
-                        {imagePrompt}
-                      </p>
-                    </HoverCardContent>
-                  </HoverCard>
-                </>
-              )}
-            </div>
+            {standalone && (
+              <div className="flex items-center gap-2 mt-1">
+                {summaryPrompt && (
+                  <>
+                    <HoverCard>
+                      <HoverCardTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={() =>
+                            setSelectedPrompt({
+                              title: "Summary Prompt",
+                              content: summaryPrompt,
+                            })
+                          }
+                        >
+                          <PencilRuler className="h-4 w-4 text-purple-400" />
+                        </Button>
+                      </HoverCardTrigger>
+                      <HoverCardContent className="w-80 bg-black/95 border-purple-500/30">
+                        <p className="text-sm text-purple-200 font-mono whitespace-pre-wrap line-clamp-4">
+                          {summaryPrompt}
+                        </p>
+                      </HoverCardContent>
+                    </HoverCard>
+                  </>
+                )}
+                {imagePrompt && (
+                  <>
+                    <HoverCard>
+                      <HoverCardTrigger asChild>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8"
+                          onClick={() =>
+                            setSelectedPrompt({
+                              title: "Image Prompt",
+                              content: imagePrompt,
+                            })
+                          }
+                        >
+                          <Wand className="h-4 w-4 text-purple-400" />
+                        </Button>
+                      </HoverCardTrigger>
+                      <HoverCardContent className="w-80 bg-black/95 border-purple-500/30">
+                        <p className="text-sm text-purple-200 font-mono whitespace-pre-wrap line-clamp-4">
+                          {imagePrompt}
+                        </p>
+                      </HoverCardContent>
+                    </HoverCard>
+                  </>
+                )}
+              </div>
+            )}
           </div>
           {isFromCache && (
             <p className="text-sm text-purple-400 mt-1">Loaded from cache</p>
@@ -182,16 +184,7 @@ export function ComicResult({
               Regenerate
             </Button>
           )}
-          {standalone && cacheId && (
-            <Button
-              onClick={() => setShowDeleteDialog(true)}
-              variant="ghost"
-              size="icon"
-              className="opacity-30 hover:opacity-100 transition-opacity"
-            >
-              <Trash2 className="w-4 h-4 text-red-400" />
-            </Button>
-          )}
+          
         </div>
       </div>
 

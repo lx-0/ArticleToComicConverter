@@ -20,7 +20,9 @@ export default function Comic() {
           <div className="w-full max-w-md mx-auto text-center space-y-4">
             <div className="mx-auto w-12 h-12 animate-spin border-4 border-purple-500/30 border-t-purple-500 rounded-full" />
             <h2 className="text-xl font-bold text-purple-200">Loading Comic</h2>
-            <p className="text-sm text-purple-400">Please wait while we fetch your comic...</p>
+            <p className="text-sm text-purple-400">
+              Please wait while we fetch your comic...
+            </p>
           </div>
         </div>
       </div>
@@ -40,6 +42,7 @@ export default function Comic() {
           createdAt={comicData.createdAt}
           summaryPrompt={comicData.summaryPrompt}
           imagePrompt={comicData.imagePrompt}
+          cacheId={comicData.cacheId}
         />
       </div>
       <Footer />
