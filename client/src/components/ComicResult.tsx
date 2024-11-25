@@ -7,6 +7,7 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogDescription,
 } from "@/components/ui/dialog";
 import {
   HoverCard,
@@ -216,6 +217,9 @@ export function ComicResult({
         onOpenChange={() => setSelectedImage(null)}
       >
         <DialogContent className="max-w-[95vw] sm:max-w-[90vw] max-h-[90vh] p-4 sm:p-6 bg-black/95 border-purple-500/30">
+          <DialogDescription className="sr-only">
+            View full size comic panel and navigate between panels
+          </DialogDescription>
           <DialogHeader className="mb-4">
             <DialogTitle className="text-xl font-bold text-purple-200">
               {title}
@@ -267,6 +271,9 @@ export function ComicResult({
         onOpenChange={() => setSelectedPrompt(null)}
       >
         <DialogContent className="max-w-2xl bg-black/95 border-purple-500/30">
+          <DialogDescription className="sr-only">
+            View the full prompt used to generate this comic
+          </DialogDescription>
           <DialogHeader>
             <DialogTitle className="text-xl font-bold text-purple-200">
               {selectedPrompt?.title}

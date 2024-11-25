@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { useParams, useLocation } from "wouter";
 import { getComicGeneration } from "@/lib/api";
 import { ComicResult } from "@/components/ComicResult";
-import type { Step } from "@db/schema";
+import { type Step, isSteps } from "@db/schema";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 
@@ -16,9 +16,19 @@ export default function Comic() {
 
   const [, navigate] = useLocation();
 
-  if (!comicData?.steps?.every((step: Step) => step.status === "complete")) {
-    const inProgressStep = comicData?.steps?.find(step => step.status === "in-progress");
-    const errorStep = comicData?.steps?.find(step => step.status === "error");
+  if (
+    !comicData?.steps ||
+    (isSteps(comicData.steps) &&
+      !(comicData.steps as Step[]).every(
+        (step: Step) => step.status === "complete",
+      ))
+  ) {
+    const inProgressStep = isSteps(comicData?.steps)
+      ? comicData.steps.find((step) => step.status === "in-progress")
+      : undefined;
+    const errorStep = isSteps(comicData?.steps)
+      ? comicData?.steps?.find((step) => step.status === "error")
+      : undefined;
 
     return (
       <div className="min-h-screen bg-gradient-to-b from-black via-purple-950 to-black text-white px-4 sm:px-6 py-6">
@@ -57,14 +67,14 @@ export default function Comic() {
       <div className="max-w-4xl mx-auto">
         <ComicResult
           title={comicData.title || "Untitled Comic"}
-          summary={comicData.summary}
-          imageUrls={comicData.imageUrls}
+          summary={comicData.summary as string[]}
+          imageUrls={comicData.imageUrls as string[]}
           isFromCache={comicData.fromCache}
           standalone
           url={comicData.url}
-          createdAt={comicData.createdAt}
-          summaryPrompt={comicData.summaryPrompt}
-          imagePrompt={comicData.imagePrompt}
+          createdAt={comicData.createdAt ?? undefined}
+          summaryPrompt={comicData.summaryPrompt ?? undefined}
+          imagePrompt={comicData.imagePrompt ?? undefined}
           cacheId={comicData.cacheId}
         />
       </div>
