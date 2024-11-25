@@ -21,6 +21,7 @@ import {
   Plus,
   Wand,
   PencilRuler,
+  Trash2,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -58,6 +59,9 @@ export function ComicResult({
     title: string;
     content: string;
   } | null>(null);
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [deletePassword, setDeletePassword] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
   const currentIndex = imageUrls.findIndex((url) => url === selectedImage);
   return (
     <div className="space-y-8">
@@ -176,6 +180,16 @@ export function ComicResult({
             >
               <RefreshCw className="w-4 h-4 mr-2" />
               Regenerate
+            </Button>
+          )}
+          {standalone && cacheId && (
+            <Button
+              onClick={() => setShowDeleteDialog(true)}
+              variant="ghost"
+              size="icon"
+              className="opacity-30 hover:opacity-100 transition-opacity"
+            >
+              <Trash2 className="w-4 h-4 text-red-400" />
             </Button>
           )}
         </div>
