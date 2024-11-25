@@ -145,6 +145,8 @@ export default function Home() {
                 imageUrls={comicData.imageUrls}
                 isFromCache={comicData.fromCache}
                 cacheId={comicData.cacheId}
+                summaryPrompt={comicData.summaryPrompt}
+                imagePrompt={comicData.imagePrompt}
                 onRegenerate={async () => {
                   try {
                     await regenerateComic(cacheId);

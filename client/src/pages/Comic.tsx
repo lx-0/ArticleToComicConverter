@@ -14,7 +14,15 @@ export default function Comic() {
   });
 
   if (!comicData?.steps?.every((step: Step) => step.status === "complete")) {
-    return <div>Loading...</div>;
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-black via-purple-950 to-black text-white p-6 flex flex-col items-center justify-center">
+        <div className="space-y-4 text-center">
+          <div className="animate-spin w-12 h-12 border-4 border-purple-500/30 border-t-purple-500 rounded-full" />
+          <h2 className="text-xl font-bold text-purple-200">Loading Comic</h2>
+          <p className="text-sm text-purple-400">Please wait while we fetch your comic...</p>
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -28,6 +36,8 @@ export default function Comic() {
           standalone
           url={comicData.url}
           createdAt={comicData.createdAt}
+          summaryPrompt={comicData.summaryPrompt}
+          imagePrompt={comicData.imagePrompt}
         />
       </div>
       <Footer />
