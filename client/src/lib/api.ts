@@ -5,6 +5,9 @@ const API_BASE = "/api";
 export async function generateComic(params: {
   url: string;
   numParts: number;
+  language: string;
+  summaryPrompt?: string | undefined;
+  imagePrompt?: string | undefined;
 }): Promise<{ cacheId: string }> {
   const response = await fetch(`${API_BASE}/comic`, {
     method: "POST",
