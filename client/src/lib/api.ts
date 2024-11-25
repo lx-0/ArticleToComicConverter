@@ -19,7 +19,9 @@ export async function generateComic(params: {
   return response.json();
 }
 
-export async function getComicGeneration(cacheId: string) {
+export async function getComicGeneration(
+  cacheId: string,
+): Promise<ComicGeneration & { fromCache: boolean }> {
   const response = await fetch(`${API_BASE}/comic/${cacheId}`);
 
   if (!response.ok) {

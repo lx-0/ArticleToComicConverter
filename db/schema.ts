@@ -41,3 +41,22 @@ export type ComicGeneration = z.infer<typeof selectComicGenerationSchema>;
 // Export types for use in the application
 export type Step = z.infer<typeof Step>;
 export type StepStatus = z.infer<typeof StepStatus>;
+
+export function isSteps(value: any): value is Step[] {
+  return (
+    value !== undefined &&
+    value !== null &&
+    Array.isArray(value) &&
+    (value.length === 0 || value.every(isStep))
+  );
+}
+
+export function isStep(value: any): value is Step {
+  return (
+    value !== undefined &&
+    value !== null &&
+    "step" in value &&
+    typeof "step" === "string" &&
+    "status" in value
+  );
+}

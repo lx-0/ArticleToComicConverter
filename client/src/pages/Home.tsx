@@ -8,6 +8,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { regenerateComic } from "@/lib/api";
 import { useToast } from "@/hooks/use-toast";
 import { getComicGeneration } from "@/lib/api";
+import { isSteps } from "@db/schema";
 import type { ComicGeneration, Step } from "@db/schema";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -49,7 +50,10 @@ export default function Home() {
   });
 
   useEffect(() => {
-    if (comicData?.steps?.every((step: Step) => step.status === "complete")) {
+    if (
+      isSteps(comicData?.steps) &&
+      comicData.steps.every((step: Step) => step.status === "complete")
+    ) {
       setShowProgress(false);
     }
   }, [comicData?.steps]);
@@ -57,7 +61,8 @@ export default function Home() {
   useEffect(() => {
     if (
       cacheId &&
-      comicData?.steps?.some((step: Step) => step.status === "in-progress")
+      isSteps(comicData?.steps) &&
+      comicData.steps.some((step: Step) => step.status === "in-progress")
     ) {
       setShowForm(false);
     }
@@ -99,7 +104,8 @@ export default function Home() {
                   onGenerate={setCacheId}
                   isGenerating={
                     !!cacheId &&
-                    comicData?.steps?.some(
+                    isSteps(comicData?.steps) &&
+                    comicData.steps.some(
                       (step: Step) => step.status === "in-progress",
                     )
                   }
@@ -130,40 +136,41 @@ export default function Home() {
               </div>
               <CollapsibleContent>
                 <ProcessStepper
-                  steps={comicData?.steps || []}
+                  steps={isSteps(comicData?.steps) ? comicData.steps : []}
                   isFromCache={comicData?.fromCache}
                 />
               </CollapsibleContent>
             </Collapsible>
 
-            {comicData?.steps?.every(
-              (step: Step) => step.status === "complete",
-            ) && (
-              <ComicResult
-                title={comicData.title || "Untitled Comic"}
-                summary={comicData.summary}
-                imageUrls={comicData.imageUrls}
-                isFromCache={comicData.fromCache}
-                cacheId={comicData.cacheId}
-                summaryPrompt={comicData.summaryPrompt}
-                imagePrompt={comicData.imagePrompt}
-                onRegenerate={async () => {
-                  try {
-                    await regenerateComic(cacheId);
-                    await queryClient.invalidateQueries({
-                      queryKey: ["comic", cacheId],
-                    });
-                  } catch (error) {
-                    toast({
-                      title: "Error",
-                      description:
-                        "Failed to regenerate comic. Please try again.",
-                      variant: "destructive",
-                    });
-                  }
-                }}
-              />
-            )}
+            {isSteps(comicData?.steps) &&
+              comicData.steps.every(
+                (step: Step) => step.status === "complete",
+              ) && (
+                <ComicResult
+                  title={comicData.title || "Untitled Comic"}
+                  summary={comicData.summary as string[]}
+                  imageUrls={comicData.imageUrls as string[]}
+                  isFromCache={comicData.fromCache}
+                  cacheId={comicData.cacheId}
+                  summaryPrompt={comicData.summaryPrompt ?? undefined}
+                  imagePrompt={comicData.imagePrompt ?? undefined}
+                  onRegenerate={async () => {
+                    try {
+                      await regenerateComic(cacheId);
+                      await queryClient.invalidateQueries({
+                        queryKey: ["comic", cacheId],
+                      });
+                    } catch (error) {
+                      toast({
+                        title: "Error",
+                        description:
+                          "Failed to regenerate comic. Please try again.",
+                        variant: "destructive",
+                      });
+                    }
+                  }}
+                />
+              )}
           </div>
         )}
         {!cacheId && <RecentComics />}
