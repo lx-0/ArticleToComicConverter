@@ -10,7 +10,7 @@ export function registerRoutes(app: Express) {
   // Generate comic
   app.post("/api/comic", async (req, res) => {
     try {
-      const { url, numParts, summaryPrompt, imagePrompt } = req.body;
+      const { url, numParts, summaryPrompt, imagePrompt, language } = req.body;
       const cacheId = crypto
         .createHash("md5")
         .update(
@@ -43,6 +43,7 @@ export function registerRoutes(app: Express) {
         numParts,
         summaryPrompt,
         imagePrompt,
+        language,
       ).catch(console.error);
 
       res.json({ cacheId });

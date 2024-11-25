@@ -114,6 +114,7 @@ export class ComicService {
     numParts: number,
     summaryPrompt?: string,
     imagePrompt?: string,
+    language: string = "English",
   ) {
     const maxRetries = 3;
 
