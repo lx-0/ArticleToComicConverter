@@ -65,7 +65,7 @@ export function ComicResult({
   const currentIndex = imageUrls.findIndex((url) => url === selectedImage);
   return (
     <div className="space-y-8">
-      <div className="flex justify-between items-center">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
         <div>
           <div className="space-y-1">
             <h2 className="text-2xl font-bold text-purple-200">{title}</h2>
@@ -146,7 +146,7 @@ export function ComicResult({
             <p className="text-sm text-purple-400 mt-1">Loaded from cache</p>
           )}
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
           <Button
             onClick={() => {
               const url = `${window.location.origin}/comic/${cacheId}`;
@@ -188,7 +188,7 @@ export function ComicResult({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {summary.map((text, index) => (
           <Card
             key={index}
@@ -215,7 +215,7 @@ export function ComicResult({
         open={!!selectedImage}
         onOpenChange={() => setSelectedImage(null)}
       >
-        <DialogContent className="max-w-[90vw] max-h-[90vh] bg-black/95 border-purple-500/30">
+        <DialogContent className="max-w-[95vw] sm:max-w-[90vw] max-h-[90vh] p-4 sm:p-6 bg-black/95 border-purple-500/30">
           <DialogHeader className="mb-4">
             <DialogTitle className="text-xl font-bold text-purple-200">
               {title}

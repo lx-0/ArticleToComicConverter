@@ -21,7 +21,7 @@ export default function Comic() {
     const errorStep = comicData?.steps?.find(step => step.status === "error");
 
     return (
-      <div className="min-h-screen bg-gradient-to-b from-black via-purple-950 to-black text-white p-6">
+      <div className="min-h-screen bg-gradient-to-b from-black via-purple-950 to-black text-white px-4 sm:px-6 py-6">
         <div className="h-full flex items-center justify-center">
           <div className="w-full max-w-md mx-auto text-center space-y-4">
             <div className="mx-auto w-12 h-12 animate-spin border-4 border-purple-500/30 border-t-purple-500 rounded-full" />
