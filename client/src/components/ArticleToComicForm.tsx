@@ -25,6 +25,7 @@ import { ChevronDown } from "lucide-react";
 const formSchema = z.object({
   url: z.string().url(),
   numParts: z.number().min(1).max(10).default(3),
+  language: z.string().default("English"),
   summaryPrompt: z.string().optional(),
   imagePrompt: z.string().optional(),
 });
@@ -43,6 +44,7 @@ export function ArticleToComicForm({ onGenerate, isGenerating }: Props) {
     defaultValues: {
       url: "",
       numParts: 3,
+      language: "English",
       summaryPrompt: "",
       imagePrompt: "",
     },
@@ -110,6 +112,31 @@ export function ArticleToComicForm({ onGenerate, isGenerating }: Props) {
                   max={10}
                   onChange={(e) => field.onChange(Number(e.target.value))}
                 />
+              </FormControl>
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="language"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="text-purple-200">Language</FormLabel>
+              <FormControl>
+                <select
+                  {...field}
+                  className="w-full bg-black/30 border-purple-500/30 rounded-md p-2 text-purple-200"
+                >
+                  <option value="English">English</option>
+                  <option value="Spanish">Spanish</option>
+                  <option value="French">French</option>
+                  <option value="German">German</option>
+                  <option value="Italian">Italian</option>
+                  <option value="Portuguese">Portuguese</option>
+                  <option value="Japanese">Japanese</option>
+                  <option value="Chinese">Chinese</option>
+                </select>
               </FormControl>
             </FormItem>
           )}
