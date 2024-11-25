@@ -81,7 +81,3 @@ PGDATABASE=your_postgres_database
 ## License
 
 MIT
-
-## Credits
-
-Created by [@lx-0](https://github.com/lx-0)
