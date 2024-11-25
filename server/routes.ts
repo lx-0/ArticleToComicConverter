@@ -96,10 +96,16 @@ export function registerRoutes(app: Express) {
   // Get recent comics
   app.get("/api/comics/recent", async (_req, res) => {
     try {
-      const recentComics = await db.query.comicGenerations.findMany({
-        orderBy: (comics, { desc }) => [desc(comics.createdAt)],
-        limit: 10,
-      });
+      const recentComics = await db
+        .select({
+          cacheId: comicGenerations.cacheId,
+          title: comicGenerations.title,
+          createdAt: comicGenerations.createdAt,
+        })
+        .from(comicGenerations)
+        .orderBy(desc(comicGenerations.createdAt))
+        .limit(10);
+      
       res.json(recentComics);
     } catch (error) {
       console.error(error);
