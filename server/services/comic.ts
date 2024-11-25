@@ -152,7 +152,9 @@ export class ComicService {
           const response = await fetch(url, { method: "HEAD" });
           const contentType = response.headers.get("content-type");
           if (!contentType?.includes("text/html")) {
-            throw new Error("The URL provided does not point to a valid article page. Please ensure you're linking to an article and not an image or other file type.");
+            throw new Error(
+              "The URL provided does not point to a valid article page. Please ensure you're linking to an article and not an image or other file type.",
+            );
           }
           await this.updateStep(
             cacheId,
@@ -201,6 +203,7 @@ export class ComicService {
               await generateSummaryAndPrompts(
                 articleText,
                 numParts,
+                language,
                 summaryPrompt,
               );
             if (!summaries.length || !prompts.length) {

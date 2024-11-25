@@ -34,6 +34,7 @@ export function registerRoutes(app: Express) {
         cacheId,
         summaryPrompt,
         imagePrompt,
+        language,
       );
 
       // Start processing in background

@@ -30,6 +30,7 @@ export const comicGenerations = pgTable("comic_generations", {
     .default([]),
   summaryPrompt: text("summary_prompt"),
   imagePrompt: text("image_prompt"),
+  language: text("language").default("English"),
   createdAt: timestamp("created_at").defaultNow(),
 });
 
