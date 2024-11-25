@@ -151,7 +151,7 @@ export class ComicService {
           const response = await fetch(url, { method: "HEAD" });
           const contentType = response.headers.get("content-type");
           if (!contentType?.includes("text/html")) {
-            throw new Error("URL must point to an HTML page");
+            throw new Error("The URL provided does not point to a valid article page. Please ensure you're linking to an article and not an image or other file type.");
           }
           await this.updateStep(
             cacheId,
