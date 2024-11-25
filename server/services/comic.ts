@@ -76,6 +76,7 @@ export class ComicService {
   static async initializeGeneration(
     url: string,
     numParts: number,
+    language: string,
     cacheId: string,
     summaryPrompt: string,
     imagePrompt: string,
@@ -85,6 +86,7 @@ export class ComicService {
     await db.insert(comicGenerations).values({
       url,
       numParts,
+      language,
       cacheId,
       steps: JSON.parse(JSON.stringify(initialSteps)),
       summary: [],

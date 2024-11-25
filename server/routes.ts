@@ -31,10 +31,10 @@ export function registerRoutes(app: Express) {
       await ComicService.initializeGeneration(
         url,
         numParts,
+        language,
         cacheId,
         summaryPrompt,
         imagePrompt,
-        language,
       );
 
       // Start processing in background
@@ -153,7 +153,8 @@ export function registerRoutes(app: Express) {
         return res.status(401).json({ error: "Invalid password" });
       }
 
-      await db.delete(comicGenerations)
+      await db
+        .delete(comicGenerations)
         .where(eq(comicGenerations.cacheId, cacheId));
 
       res.json({ success: true });
