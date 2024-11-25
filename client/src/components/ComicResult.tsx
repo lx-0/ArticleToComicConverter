@@ -212,6 +212,77 @@ export function ComicResult({
         ))}
       </div>
 
+      <div className="mt-8 flex justify-end">
+        {standalone && cacheId && (
+          <Button
+            onClick={() => setShowDeleteDialog(true)}
+            variant="ghost"
+            size="icon"
+            className="opacity-30 hover:opacity-100 transition-opacity"
+          >
+            <Trash2 className="w-4 h-4 text-red-400" />
+          </Button>
+        )}
+      </div>
+
+      <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <DialogContent className="max-w-md bg-black/95 border-purple-500/30">
+          <DialogHeader>
+            <DialogTitle className="text-xl font-bold text-purple-200">
+              Delete Comic
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <p className="text-sm text-purple-200">
+              Enter the admin password to delete this comic.
+            </p>
+            <Input
+              type="password"
+              placeholder="Password"
+              value={deletePassword}
+              onChange={(e) => setDeletePassword(e.target.value)}
+              className="bg-black/30 border-purple-500/30"
+            />
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setShowDeleteDialog(false)}
+                className="border-purple-500/30"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={async () => {
+                  setIsDeleting(true);
+                  try {
+                    const response = await fetch(`/api/comic/${cacheId}/delete`, {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ password: deletePassword })
+                    });
+                    if (!response.ok) throw new Error('Invalid password');
+                    toast({ title: "Comic deleted successfully" });
+                    navigate("/");
+                  } catch (error) {
+                    toast({
+                      title: "Error",
+                      description: "Invalid password or failed to delete comic",
+                      variant: "destructive"
+                    });
+                  }
+                  setIsDeleting(false);
+                  setShowDeleteDialog(false);
+                }}
+                disabled={isDeleting}
+                className="bg-red-600 hover:bg-red-700"
+              >
+                {isDeleting ? "Deleting..." : "Delete"}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <Dialog
         open={!!selectedImage}
         onOpenChange={() => setSelectedImage(null)}
