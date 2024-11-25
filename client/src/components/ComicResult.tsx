@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Card } from "@/components/ui/card";
+import { useLocation } from "wouter";
 import {
   Dialog,
   DialogContent,
@@ -50,6 +51,7 @@ export function ComicResult({
   summaryPrompt,
   imagePrompt,
 }: Props) {
+  const [, navigate] = useLocation();
   const { toast } = useToast();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
   const [selectedPrompt, setSelectedPrompt] = useState<{
@@ -157,7 +159,7 @@ export function ComicResult({
 
           {standalone && (
             <Button
-              onClick={() => (window.location.href = "/")}
+              onClick={() => navigate("/")}
               variant="outline"
               className="border-purple-500/30"
             >
