@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Card } from "@/components/ui/card";
 import { useLocation } from "wouter";
+import { Input } from "@/components/ui/input";
 import {
   Dialog,
   DialogContent,
@@ -185,7 +186,6 @@ export function ComicResult({
               Regenerate
             </Button>
           )}
-          
         </div>
       </div>
 
@@ -212,7 +212,7 @@ export function ComicResult({
         ))}
       </div>
 
-      <div className="mt-8 flex justify-end">
+      <div className="mt-8 flex justify-center">
         {standalone && cacheId && (
           <Button
             onClick={() => setShowDeleteDialog(true)}
@@ -255,19 +255,22 @@ export function ComicResult({
                 onClick={async () => {
                   setIsDeleting(true);
                   try {
-                    const response = await fetch(`/api/comic/${cacheId}/delete`, {
-                      method: 'POST',
-                      headers: { 'Content-Type': 'application/json' },
-                      body: JSON.stringify({ password: deletePassword })
-                    });
-                    if (!response.ok) throw new Error('Invalid password');
+                    const response = await fetch(
+                      `/api/comic/${cacheId}/delete`,
+                      {
+                        method: "POST",
+                        headers: { "Content-Type": "application/json" },
+                        body: JSON.stringify({ password: deletePassword }),
+                      },
+                    );
+                    if (!response.ok) throw new Error("Invalid password");
                     toast({ title: "Comic deleted successfully" });
                     navigate("/");
                   } catch (error) {
                     toast({
                       title: "Error",
                       description: "Invalid password or failed to delete comic",
-                      variant: "destructive"
+                      variant: "destructive",
                     });
                   }
                   setIsDeleting(false);
