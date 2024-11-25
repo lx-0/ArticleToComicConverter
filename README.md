@@ -2,6 +2,8 @@
 
 Transform any article into a visually stunning comic using AI. This web application takes article URLs as input and generates a sequence of comic panels that tell the story in a visual format.
 
+## [🔗 Try the Demo](https://comic-converter.replit.app)
+
 ## Features
 
 - Convert articles into comic panels using AI
