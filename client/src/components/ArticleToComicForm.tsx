@@ -126,7 +126,7 @@ export function ArticleToComicForm({ onGenerate, isGenerating }: Props) {
               <FormControl>
                 <select
                   {...field}
-                  className="w-full bg-black/30 border-purple-500/30 rounded-md p-2 text-purple-200"
+                  className="w-full bg-black/30 border border-purple-500/30 rounded-md p-2 text-purple-200 ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                 >
                   <option value="English">English</option>
                   <option value="Spanish">Spanish</option>
