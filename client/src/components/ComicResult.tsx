@@ -1,9 +1,26 @@
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import { Card } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/components/ui/hover-card";
-import { RefreshCw, Share, ChevronLeft, ChevronRight, Plus, Wand, PencilRuler } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import {
+  HoverCard,
+  HoverCardTrigger,
+  HoverCardContent,
+} from "@/components/ui/hover-card";
+import {
+  RefreshCw,
+  Share,
+  ChevronLeft,
+  ChevronRight,
+  Plus,
+  Wand,
+  PencilRuler,
+} from "lucide-react";
 import { useState } from "react";
 
 interface Props {
@@ -20,11 +37,26 @@ interface Props {
   imagePrompt?: string;
 }
 
-export function ComicResult({ title, summary, imageUrls, onRegenerate, isFromCache, standalone, cacheId, url, createdAt, summaryPrompt, imagePrompt }: Props) {
+export function ComicResult({
+  title,
+  summary,
+  imageUrls,
+  onRegenerate,
+  isFromCache,
+  standalone,
+  cacheId,
+  url,
+  createdAt,
+  summaryPrompt,
+  imagePrompt,
+}: Props) {
   const { toast } = useToast();
   const [selectedImage, setSelectedImage] = useState<string | null>(null);
-  const [selectedPrompt, setSelectedPrompt] = useState<{ title: string; content: string } | null>(null);
-  const currentIndex = imageUrls.findIndex(url => url === selectedImage);
+  const [selectedPrompt, setSelectedPrompt] = useState<{
+    title: string;
+    content: string;
+  } | null>(null);
+  const currentIndex = imageUrls.findIndex((url) => url === selectedImage);
   return (
     <div className="space-y-8">
       <div className="flex justify-between items-center">
@@ -33,10 +65,10 @@ export function ComicResult({ title, summary, imageUrls, onRegenerate, isFromCac
             <h2 className="text-2xl font-bold text-purple-200">{title}</h2>
             {standalone && url && createdAt && (
               <div className="space-y-1">
-                <a 
+                <a
                   href={url}
                   target="_blank"
-                  rel="noopener noreferrer" 
+                  rel="noopener noreferrer"
                   className="text-sm text-purple-400/60 hover:text-purple-400 transition-colors block"
                 >
                   {url}
@@ -46,7 +78,7 @@ export function ComicResult({ title, summary, imageUrls, onRegenerate, isFromCac
                 </p>
               </div>
             )}
-            <p className="text-sm text-purple-400">Your Comic Story</p>
+            {/* <p className="text-sm text-purple-400">Your Comic Story</p> */}
             <div className="flex items-center gap-2 mt-1">
               {summaryPrompt && (
                 <>
@@ -56,13 +88,20 @@ export function ComicResult({ title, summary, imageUrls, onRegenerate, isFromCac
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8"
-                        onClick={() => setSelectedPrompt({ title: "Summary Prompt", content: summaryPrompt })}
+                        onClick={() =>
+                          setSelectedPrompt({
+                            title: "Summary Prompt",
+                            content: summaryPrompt,
+                          })
+                        }
                       >
                         <PencilRuler className="h-4 w-4 text-purple-400" />
                       </Button>
                     </HoverCardTrigger>
                     <HoverCardContent className="w-80 bg-black/95 border-purple-500/30">
-                      <p className="text-sm text-purple-200">Summary Generation Prompt</p>
+                      <p className="text-sm text-purple-200 font-mono whitespace-pre-wrap line-clamp-4">
+                        {summaryPrompt}
+                      </p>
                     </HoverCardContent>
                   </HoverCard>
                 </>
@@ -75,13 +114,20 @@ export function ComicResult({ title, summary, imageUrls, onRegenerate, isFromCac
                         variant="ghost"
                         size="icon"
                         className="h-8 w-8"
-                        onClick={() => setSelectedPrompt({ title: "Image Prompt", content: imagePrompt })}
+                        onClick={() =>
+                          setSelectedPrompt({
+                            title: "Image Prompt",
+                            content: imagePrompt,
+                          })
+                        }
                       >
                         <Wand className="h-4 w-4 text-purple-400" />
                       </Button>
                     </HoverCardTrigger>
                     <HoverCardContent className="w-80 bg-black/95 border-purple-500/30">
-                      <p className="text-sm text-purple-200">Image Generation Prompt</p>
+                      <p className="text-sm text-purple-200 font-mono whitespace-pre-wrap line-clamp-4">
+                        {imagePrompt}
+                      </p>
                     </HoverCardContent>
                   </HoverCard>
                 </>
@@ -89,9 +135,7 @@ export function ComicResult({ title, summary, imageUrls, onRegenerate, isFromCac
             </div>
           </div>
           {isFromCache && (
-            <p className="text-sm text-purple-400 mt-1">
-              Loaded from cache
-            </p>
+            <p className="text-sm text-purple-400 mt-1">Loaded from cache</p>
           )}
         </div>
         <div className="flex gap-2">
@@ -110,10 +154,10 @@ export function ComicResult({ title, summary, imageUrls, onRegenerate, isFromCac
             <Share className="w-4 h-4 mr-2" />
             Share
           </Button>
-          
+
           {standalone && (
             <Button
-              onClick={() => window.location.href = '/'}
+              onClick={() => (window.location.href = "/")}
               variant="outline"
               className="border-purple-500/30"
             >
@@ -121,7 +165,7 @@ export function ComicResult({ title, summary, imageUrls, onRegenerate, isFromCac
               Create New Comic
             </Button>
           )}
-          
+
           {onRegenerate && (
             <Button
               onClick={onRegenerate}
@@ -158,15 +202,20 @@ export function ComicResult({ title, summary, imageUrls, onRegenerate, isFromCac
         ))}
       </div>
 
-      <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
+      <Dialog
+        open={!!selectedImage}
+        onOpenChange={() => setSelectedImage(null)}
+      >
         <DialogContent className="max-w-[90vw] max-h-[90vh] bg-black/95 border-purple-500/30">
           <DialogHeader className="mb-4">
-            <DialogTitle className="text-xl font-bold text-purple-200">{title}</DialogTitle>
+            <DialogTitle className="text-xl font-bold text-purple-200">
+              {title}
+            </DialogTitle>
           </DialogHeader>
           <div className="relative w-full h-full flex flex-col items-center justify-center gap-4">
             <div className="relative w-full">
               <img
-                src={selectedImage || ''}
+                src={selectedImage || ""}
                 alt="Full size comic panel"
                 className="max-w-full max-h-[70vh] object-contain rounded-lg mx-auto"
               />
@@ -176,7 +225,9 @@ export function ComicResult({ title, summary, imageUrls, onRegenerate, isFromCac
                     variant="ghost"
                     size="icon"
                     className="bg-black/50 text-purple-200 hover:text-purple-100 hover:bg-purple-500/20 pointer-events-auto"
-                    onClick={() => setSelectedImage(imageUrls[currentIndex - 1])}
+                    onClick={() =>
+                      setSelectedImage(imageUrls[currentIndex - 1])
+                    }
                     disabled={currentIndex === 0}
                   >
                     <ChevronLeft className="h-6 w-6" />
@@ -185,7 +236,9 @@ export function ComicResult({ title, summary, imageUrls, onRegenerate, isFromCac
                     variant="ghost"
                     size="icon"
                     className="bg-black/50 text-purple-200 hover:text-purple-100 hover:bg-purple-500/20 pointer-events-auto"
-                    onClick={() => setSelectedImage(imageUrls[currentIndex + 1])}
+                    onClick={() =>
+                      setSelectedImage(imageUrls[currentIndex + 1])
+                    }
                     disabled={currentIndex === imageUrls.length - 1}
                   >
                     <ChevronRight className="h-6 w-6" />
@@ -200,7 +253,10 @@ export function ComicResult({ title, summary, imageUrls, onRegenerate, isFromCac
         </DialogContent>
       </Dialog>
 
-      <Dialog open={!!selectedPrompt} onOpenChange={() => setSelectedPrompt(null)}>
+      <Dialog
+        open={!!selectedPrompt}
+        onOpenChange={() => setSelectedPrompt(null)}
+      >
         <DialogContent className="max-w-2xl bg-black/95 border-purple-500/30">
           <DialogHeader>
             <DialogTitle className="text-xl font-bold text-purple-200">
