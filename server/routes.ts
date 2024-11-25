@@ -1,5 +1,5 @@
 import type { Express, Request, Response } from "express";
-import { eq, desc } from "drizzle-orm";
+import { eq, desc, and } from "drizzle-orm";
 import { db } from "db";
 import { comicGenerations } from "@db/schema";
 import { DEFAULT_PROMPTS } from "./constants";
@@ -138,6 +138,26 @@ export function registerRoutes(app: Express) {
     } catch (error) {
       console.error(error);
       res.status(500).send("Error fetching image");
+    }
+  });
+
+  // Add delete comic endpoint
+  app.post("/api/comic/:cacheId/delete", async (req, res) => {
+    try {
+      const { cacheId } = req.params;
+      const { password } = req.body;
+
+      if (password !== "hackerman") {
+        return res.status(401).json({ error: "Invalid password" });
+      }
+
+      await db.delete(comicGenerations)
+        .where(eq(comicGenerations.cacheId, cacheId));
+
+      res.json({ success: true });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: "Failed to delete comic" });
     }
   });
 }
