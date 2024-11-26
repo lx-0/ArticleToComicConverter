@@ -1,8 +1,9 @@
 {
-  "name": "rest-express",
+  "name": "article-to-comic-converter",
   "version": "1.0.0",
-  "type": "module",
+  "author": "Alex Wegener, @lx-0",
   "license": "MIT",
+  "type": "module",
   "scripts": {
     "dev": "tsx watch --clear-screen=false --exclude vite.config.ts.* server/index.ts",
     "build": "vite build && esbuild server/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist",
